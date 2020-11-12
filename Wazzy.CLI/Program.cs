@@ -23,7 +23,6 @@ namespace Wazzy.CLI
                 string modifiedChunkHex = BitConverter.ToString(assembledModuleData, i, 10);
                 System.Diagnostics.Debugger.Break();
             }
-            Console.ReadLine();
         }
     }
 }
