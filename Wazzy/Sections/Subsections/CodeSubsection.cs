@@ -1,4 +1,4 @@
-﻿//#define Peanut_Debugging
+﻿#define Peanut_Debugging
 
 using System.Collections.Generic;
 
@@ -33,7 +33,7 @@ namespace Wazzy.Sections.Subsections
             {
                 Expression = input.ReadExpression();
             }
-            catch { System.Diagnostics.Debugger.Break(); }
+            catch(System.Exception e) { System.Diagnostics.Debugger.Break(); }
 #else
             Body = input.ReadBytes(sizeOfBytecode).ToArray();
 #endif
