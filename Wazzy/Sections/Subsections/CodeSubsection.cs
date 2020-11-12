@@ -19,7 +19,6 @@ namespace Wazzy.Sections.Subsections
             uint funcSize = input.ReadIntULEB128();
         DataStart: // Are you judging me right now? 
             int startOfSubsection = input.Position;
-            int start = input.Position;
             Locals = new List<Local>(input.ReadIntLEB128());
             for (int i = 0; i < Locals.Capacity; i++)
             {
@@ -30,7 +29,11 @@ namespace Wazzy.Sections.Subsections
             int sizeOfBytecode = (int)funcSize - (startOfBytecode - startOfSubsection);
 
 #if Peanut_Debugging
-            Expression = input.ReadExpression();
+            try
+            {
+                Expression = input.ReadExpression();
+            }
+            catch { System.Diagnostics.Debugger.Break(); }
 #else
             Body = input.ReadBytes(sizeOfBytecode).ToArray();
 #endif
