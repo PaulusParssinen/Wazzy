@@ -131,7 +131,8 @@ namespace Wazzy
 
         public void Disassemble()
         {   
-            var input = new WASMReader(_data.Span[HEADER_SIZE..]);
+            var input = new WASMReader(_data.Span);
+            input.Position = HEADER_SIZE;
 
             while (input.IsDataAvailable)
             {
@@ -148,7 +149,15 @@ namespace Wazzy
             _data = null;
             GC.Collect();
         }
-
+        public void Assemble(WASMWriter output)
+        {
+            output.Write(MAGIC_HEADER);
+            output.Write(Version);
+            foreach (WASMSection section in _sections.Values.Concat(CustomSections))
+            {
+                section.WriteTo(ref output);
+            }
+        }
         public void Assemble(IBufferWriter<byte> output)
         {
             var headerWriter = new WASMWriter(output.GetSpan(HEADER_SIZE));
@@ -161,23 +170,9 @@ namespace Wazzy
                 section.WriteTo(output);
             }
         }
-        public void Assemble(WASMWriter output)
-        {
-            output.Write(MAGIC_HEADER);
-            output.Write(Version);
-            foreach (WASMSection section in _sections.Values.Concat(CustomSections))
-            {
-                section.WriteTo(ref output);
-            }
-        }
 
-        public byte[] ToArray()
-        {
-            var arrayWriter = new ArrayBufferWriter<byte>(HEADER_SIZE);
-            Assemble(arrayWriter);
-            return arrayWriter.WrittenSpan.ToArray();
-        }
-
+        private void RecordSection<T>(T section, out T backingField) where T : WASMSection
+            => _sections[section.Id] = backingField = section;
         protected virtual WASMSection ParseSection(WASMSectionId id, int length, ref WASMReader input) => id switch
         {
             WASMSectionId.CustomSection => new CustomSection(length, ref input),
@@ -197,8 +192,12 @@ namespace Wazzy
             _ => throw new Exception($"Unable to determine section type. {id}(0x{id:X})")
         };
 
-        private void RecordSection<T>(T section, out T backingField) where T : WASMSection
-            => _sections[section.Id] = backingField = section;
+        public byte[] ToArray()
+        {
+            var arrayWriter = new ArrayBufferWriter<byte>(HEADER_SIZE);
+            Assemble(arrayWriter);
+            return arrayWriter.WrittenSpan.ToArray();
+        }
 
         #region IEnumerable<T> Implementation
         public IEnumerator<WASMSection> GetEnumerator()
