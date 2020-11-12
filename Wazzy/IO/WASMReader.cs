@@ -112,7 +112,7 @@ namespace Wazzy.IO
             {
                 b = ReadByte();
 
-                if (shift == 28 && b != 0 && b != 0x7F)
+                if (shift == 35 && b != 0 && b != 0x7F)
                     throw new OverflowException();
 
                 result |= (b & 0x7F) << shift;
