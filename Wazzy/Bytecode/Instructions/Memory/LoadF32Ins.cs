@@ -8,9 +8,9 @@ namespace Wazzy.Bytecode.Instructions.Memory
             : base(OPCode.LoadF32, true)
         { }
         public LoadF32Ins(ref WASMReader input)
-            : base(OPCode.LoadF32, input, true)
+            : base(OPCode.LoadF32, ref input, true)
         { }
-        public LoadF32Ins(int align, int offset)
+        public LoadF32Ins(uint align, uint offset)
             : base(OPCode.LoadF32, align, offset)
         { }
     }

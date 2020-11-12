@@ -4,45 +4,41 @@ namespace Wazzy.Bytecode.Instructions.Memory
 {
     public abstract class MemoryInstruction : WASMInstruction
     {
-        private readonly bool _hasMemoryArguments;
+        private readonly bool _hasMemArgs;
 
-        public int Align { get; set; }
-        public int Offset { get; set; }
+        public uint Align { get; set; }
+        public uint Offset { get; set; }
 
-        public MemoryInstruction(OPCode op, int align, int offset)
+        public MemoryInstruction(OPCode op, uint align, uint offset)
             : this(op, true)
         {
             Align = align;
             Offset = offset;
         }
-        public MemoryInstruction(OPCode op, bool hasMemoryArguments)
+        public MemoryInstruction(OPCode op, bool hasMemArgs)
             : base(op)
         {
-            _hasMemoryArguments = hasMemoryArguments;
+            _hasMemArgs = hasMemArgs;
         }
-        protected MemoryInstruction(OPCode op, WASMReader input, bool hasMemoryArguments)
-            : this(op, hasMemoryArguments)
+        protected MemoryInstruction(OPCode op, ref WASMReader input, bool hasMemArgs)
+            : this(op, hasMemArgs)
         {
-            if (_hasMemoryArguments = hasMemoryArguments)
+            if (_hasMemArgs = hasMemArgs)
             {
-                Align = input.ReadIntLEB128();
-                Offset = input.ReadIntLEB128();
+                Align = input.ReadIntULEB128();
+                Offset = input.ReadIntULEB128();
             }
         }
 
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            if (_hasMemoryArguments)
+            if (_hasMemArgs)
             {
-                output.WriteLEB128(Align);
-                output.WriteLEB128(Offset);
+                output.WriteULEB128(Align);
+                output.WriteULEB128(Offset);
             }
         }
 
-        protected override int GetBodySize()
-        {
-            return _hasMemoryArguments ? 
-                WASMReader.GetLEB128Size(Align) + WASMReader.GetLEB128Size(Offset) : 0;
-        }
+        protected override int GetBodySize() => _hasMemArgs ? WASMReader.GetULEB128Size(Align) + WASMReader.GetULEB128Size(Offset) : 0;
     }
 }
