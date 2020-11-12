@@ -1,5 +1,4 @@
-﻿#define Peanut_Debugging
-
+﻿//#define Peanut_Debugging
 using System.Collections.Generic;
 
 using Wazzy.IO;
@@ -16,18 +15,19 @@ namespace Wazzy.Sections.Subsections
 
         public CodeSubsection(ref WASMReader input)
         {
-            uint funcSize = input.ReadIntULEB128();
+            int funcSize = (int)input.ReadIntULEB128();
+#if Peanut_Debugging
         DataStart: // Are you judging me right now? 
+#endif
             int startOfSubsection = input.Position;
-            Locals = new List<Local>(input.ReadIntLEB128());
+            Locals = new List<Local>((int)input.ReadIntULEB128());
             for (int i = 0; i < Locals.Capacity; i++)
             {
                 Locals.Add(new Local(ref input));
             }
 
             int startOfBytecode = input.Position;
-            int sizeOfBytecode = (int)funcSize - (startOfBytecode - startOfSubsection);
-
+            int sizeOfBytecode = funcSize - (startOfBytecode - startOfSubsection);
 #if Peanut_Debugging
             try
             {
@@ -48,29 +48,10 @@ namespace Wazzy.Sections.Subsections
 #endif
         }
 
-        public override void WriteTo(ref WASMWriter output)
-        {
-            int funcSize = 0;
-            funcSize += WASMReader.GetLEB128Size(Locals.Count);
-            foreach (Local local in Locals)
-            {
-                funcSize += local.GetSize();
-            }
-            funcSize += Body.Length;
-
-            output.WriteULEB128((uint)funcSize);
-            output.WriteLEB128(Locals.Count);
-            foreach (Local local in Locals)
-            {
-                local.WriteTo(ref output);
-            }
-            output.Write(Body);
-        }
-
         public override int GetSize()
         {
             int size = 0;
-            size += WASMReader.GetLEB128Size(Locals.Count);
+            size += WASMReader.GetULEB128Size((uint)Locals.Count);
             foreach (Local local in Locals)
             {
                 size += local.GetSize();
@@ -80,6 +61,24 @@ namespace Wazzy.Sections.Subsections
             // Finally calculate the real size
             size += WASMReader.GetULEB128Size((uint)size);
             return size;
+        }
+        public override void WriteTo(ref WASMWriter output)
+        {
+            int funcSize = 0;
+            funcSize += WASMReader.GetULEB128Size((uint)Locals.Count);
+            foreach (Local local in Locals)
+            {
+                funcSize += local.GetSize();
+            }
+            funcSize += Body.Length;
+
+            output.WriteULEB128((uint)funcSize);
+            output.WriteULEB128((uint)Locals.Count);
+            foreach (Local local in Locals)
+            {
+                local.WriteTo(ref output);
+            }
+            output.Write(Body);
         }
     }
 }

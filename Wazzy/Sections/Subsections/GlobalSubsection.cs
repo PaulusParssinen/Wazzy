@@ -17,15 +17,6 @@ namespace Wazzy.Sections.Subsections
             Expression = input.ReadExpression();
         }
 
-        public override void WriteTo(ref WASMWriter output)
-        {
-            Info.WriteTo(ref output);
-            foreach (WASMInstruction instruction in Expression)
-            {
-                instruction.WriteTo(ref output);
-            }
-        }
-
         public override int GetSize()
         {
             int size = 0;
@@ -35,6 +26,14 @@ namespace Wazzy.Sections.Subsections
                 size += instruction.GetSize();
             }
             return size;
+        }
+        public override void WriteTo(ref WASMWriter output)
+        {
+            Info.WriteTo(ref output);
+            foreach (WASMInstruction instruction in Expression)
+            {
+                instruction.WriteTo(ref output);
+            }
         }
     }
 }

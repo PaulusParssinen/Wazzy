@@ -4,22 +4,15 @@ namespace Wazzy.Sections
 {
     public class StartSection : WASMSection
     {
-        public int FunctionId { get; set; }
+        public uint FunctionIndex { get; set; }
 
         public StartSection(ref WASMReader input)
             : base(WASMSectionId.StartSection)
         {
-            FunctionId = input.ReadIntLEB128();
+            FunctionIndex = input.ReadIntULEB128();
         }
 
-        protected override int GetBodySize()
-        {
-            return WASMReader.GetLEB128Size(FunctionId);
-        }
-
-        protected override void WriteBodyTo(ref WASMWriter output)
-        {
-            output.WriteLEB128(FunctionId);
-        }
+        protected override int GetBodySize() => WASMReader.GetULEB128Size(FunctionIndex);
+        protected override void WriteBodyTo(ref WASMWriter output) => output.WriteULEB128(FunctionIndex);
     }
 }

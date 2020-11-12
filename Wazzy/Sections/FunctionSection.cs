@@ -2,35 +2,34 @@
 
 namespace Wazzy.Sections
 {
-    public class FunctionSection : WASMSectionEnumerable<int>
+    public class FunctionSection : WASMSectionEnumerable<uint>
     {
         public FunctionSection(ref WASMReader input)
             : base(WASMSectionId.FunctionSection)
         {
-            Subsections.Capacity = input.ReadIntLEB128();
+            Subsections.Capacity = (int)input.ReadIntULEB128();
             for (int i = 0; i < Subsections.Capacity; i++)
             {
-                Subsections.Add(input.ReadIntLEB128());
+                Subsections.Add(input.ReadIntULEB128());
             }
         }
 
         protected override int GetBodySize()
         {
             int size = 0;
-            size += WASMReader.GetLEB128Size(Subsections.Count);
-            foreach (int typeIndex in Subsections)
+            size += WASMReader.GetULEB128Size((uint)Subsections.Count);
+            foreach (uint typeIndex in Subsections)
             {
-                size += WASMReader.GetLEB128Size(typeIndex);
+                size += WASMReader.GetULEB128Size(typeIndex);
             }
             return size;
         }
-
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteLEB128(Subsections.Count);
-            foreach (int typeIndex in Subsections)
+            output.WriteULEB128((uint)Subsections.Count);
+            foreach (uint typeIndex in Subsections)
             {
-                output.WriteLEB128(typeIndex);
+                output.WriteULEB128(typeIndex);
             }
         }
     }

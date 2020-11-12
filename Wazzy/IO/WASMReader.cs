@@ -147,6 +147,16 @@ namespace Wazzy.IO
         }
 
         /// <summary>
+        /// Return the number of bytes required to encode signed integer using LEB128 encoding.
+        /// </summary>
+        public static int GetLEB128Size(long value)
+        {
+            // Same as unsigned size calculation but we have to account for the sign bit
+            value ^= value >> 63;
+            int x = 1 + 6 + 64 - BitOperations.LeadingZeroCount((ulong)value | 1UL);
+            return (x * 37) >> 8;
+        }
+        /// <summary>
         /// Return the number of bytes required to encode unsigned integer using LEB128 encoding.
         /// </summary>
         public static int GetULEB128Size(ulong value)
@@ -160,15 +170,10 @@ namespace Wazzy.IO
             // This works for 0 <= x < 256 / (7 * 37 - 256), i.e. 0 <= x <= 85.
             return (x * 37) >> 8;
         }
-        /// <summary>
-        /// Return the number of bytes required to encode signed integer using LEB128 encoding.
-        /// </summary>
-        public static int GetLEB128Size(long value)
+        public static int GetULEB128Size(string name)
         {
-            // Same as unsigned size calculation but we have to account for the sign bit
-            value ^= value >> 63;
-            int x = 1 + 6 + 64 - BitOperations.LeadingZeroCount((ulong)value | 1UL);
-            return (x * 37) >> 8;
+            int nameSize = Encoding.UTF8.GetByteCount(name);
+            return GetULEB128Size((uint)nameSize) + nameSize;
         }
 
         /// <summary>
@@ -190,7 +195,7 @@ namespace Wazzy.IO
             while (Position < Length)
             {
                 var op = (OPCode)ReadByte();
-                var instruction = WASMInstruction.Create(op, ref this);
+                var instruction = WASMInstruction.Create(ref this, op);
 
                 expression.Add(instruction);
                 if (byteReadLimit == -1) // Nested expression, return to upper level if marked as exit operation code.

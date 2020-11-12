@@ -36,30 +36,28 @@ namespace Wazzy.Types
 
         public FuncType(ref WASMReader input)
         {
-            ParameterTypes = new List<Type>(input.ReadIntLEB128());
+            ParameterTypes = new List<Type>((int)input.ReadIntULEB128());
             for (int i = 0; i < ParameterTypes.Capacity; i++)
             {
-                Type paramType = input.ReadValueType();
-                ParameterTypes.Add(paramType);
+                ParameterTypes.Add(input.ReadValueType());
             }
 
-            ResultTypes = new List<Type>(input.ReadIntLEB128());
+            ResultTypes = new List<Type>((int)input.ReadIntULEB128());
             for (int i = 0; i < ResultTypes.Capacity; i++)
             {
-                Type resultType = input.ReadValueType();
-                ResultTypes.Add(resultType);
+                ResultTypes.Add(input.ReadValueType());
             }
         }
 
         public override void WriteTo(ref WASMWriter output)
         {
-            output.WriteLEB128(ParameterTypes.Count);
+            output.WriteULEB128((uint)ParameterTypes.Count);
             foreach (Type parameterType in ParameterTypes)
             {
                 output.Write(parameterType);
             }
 
-            output.WriteLEB128(ResultTypes.Count);
+            output.WriteULEB128((uint)ResultTypes.Count);
             foreach (Type resultType in ResultTypes)
             {
                 output.Write(resultType);
@@ -69,10 +67,9 @@ namespace Wazzy.Types
         public override int GetSize()
         {
             int size = 0;
-            size += WASMReader.GetLEB128Size(ParameterTypes.Count);
+            size += WASMReader.GetULEB128Size((uint)ParameterTypes.Count);
             size += ParameterTypes.Count * sizeof(byte);
-
-            size += WASMReader.GetLEB128Size(ResultTypes.Count);
+            size += WASMReader.GetULEB128Size((uint)ResultTypes.Count);
             size += ResultTypes.Count * sizeof(byte);
             return size;
         }

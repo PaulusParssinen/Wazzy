@@ -1,6 +1,6 @@
 ﻿namespace Wazzy.Sections
 {
-    public enum ImportDesc : byte
+    public enum ImpexDesc : byte
     {
         Function = 0x00,
         Table = 0x01,

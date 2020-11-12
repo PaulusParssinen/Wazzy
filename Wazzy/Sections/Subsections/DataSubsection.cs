@@ -9,46 +9,37 @@ namespace Wazzy.Sections.Subsections
 {
     public class DataSubsection : WASMObject
     {
-        public int Offset { get; }
-        public int MemoryIndex { get; }
+        public uint MemoryIndex { get; }
         public byte[] Package { get; set; }
         public List<WASMInstruction> Expression { get; }
 
-        public DataSubsection(int offset, byte[] package)
+        public DataSubsection(ref WASMReader input)
         {
-            Offset = offset;
+            MemoryIndex = input.ReadIntULEB128();
+            Expression = input.ReadExpression();
+            Package = new byte[input.ReadIntULEB128()];
+            input.ReadBytes(Package);
+        }
+        public DataSubsection(int offset, byte[] package, uint memoryIndex = 0)
+        {
             Package = package;
-            Expression = new List<WASMInstruction>()
+            Expression = new List<WASMInstruction>(2)
             {
                 new ConstantI32Ins(offset),
                 new EndIns()
             };
-        }
-        public DataSubsection(WASMModule module, ref WASMReader input)
-        {
-            MemoryIndex = input.ReadIntLEB128();
-            Expression = input.ReadExpression();
-            Offset = (int)WASMMachine.Execute(Expression, module).Pop();
-            
-            Package = new byte[input.ReadIntULEB128()];
-            input.ReadBytes(Package);
+            MemoryIndex = memoryIndex;
         }
 
-        public override void WriteTo(ref WASMWriter output)
+        public T EvaluateOffset<T>(WASMModule context)
         {
-            output.WriteLEB128(MemoryIndex);
-            foreach (WASMInstruction instruction in Expression)
-            {
-                instruction.WriteTo(ref output);
-            }
-            output.WriteULEB128((uint)Package.Length);
-            output.Write(Package);
+            return (T)WASMMachine.Execute(Expression, context).Pop();
         }
 
         public override int GetSize()
         {
             int size = 0;
-            size += WASMReader.GetLEB128Size(MemoryIndex);
+            size += WASMReader.GetULEB128Size(MemoryIndex);
             foreach (WASMInstruction instruction in Expression)
             {
                 size += instruction.GetSize();
@@ -56,6 +47,16 @@ namespace Wazzy.Sections.Subsections
             size += WASMReader.GetULEB128Size((uint)Package.Length);
             size += Package.Length;
             return size;
+        }
+        public override void WriteTo(ref WASMWriter output)
+        {
+            output.WriteULEB128(MemoryIndex);
+            foreach (WASMInstruction instruction in Expression)
+            {
+                instruction.WriteTo(ref output);
+            }
+            output.WriteULEB128((uint)Package.Length);
+            output.Write(Package);
         }
     }
 }

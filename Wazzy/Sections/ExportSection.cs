@@ -1,57 +1,36 @@
-﻿using System;
-using System.Text;
-
-using Wazzy.IO;
+﻿using Wazzy.IO;
+using Wazzy.Sections.Subsections;
 
 namespace Wazzy.Sections
 {
-    public class ExportSection : WASMSection
+    public class ExportSection : WASMSectionEnumerable<ExportSubsection>
     {
-        public string[] Names { get; }
-        public byte[] Tags { get; }
-        public int[] Indices { get; }
-
         public ExportSection(ref WASMReader input)
             : base(WASMSectionId.ExportSection)
         {
-            int exportCount = input.ReadIntLEB128();
-            Names = new string[exportCount];
-            Tags = new byte[exportCount];
-            Indices = new int[exportCount];
-
-            for (int i = 0; i < exportCount; i++)
+            Subsections.Capacity = (int)input.ReadIntULEB128();
+            for (int i = 0; i < Subsections.Capacity; i++)
             {
-                Names[i] = input.ReadString();
-                Tags[i] = input.ReadByte();
-                Indices[i] = input.ReadIntLEB128();
+                Subsections.Add(new ExportSubsection(ref input));
             }
         }
 
         protected override int GetBodySize()
         {
-            int exportCount = Math.Min(Names.Length, Math.Min(Tags.Length, Indices.Length));
-
             int size = 0;
-            size += WASMReader.GetLEB128Size(exportCount);
-            for (int i = 0; i < exportCount; i++)
+            size += WASMReader.GetULEB128Size((uint)Subsections.Count);
+            foreach (ExportSubsection export in Subsections)
             {
-                size += WASMReader.GetULEB128Size((uint)Names[i].Length);
-                size += Encoding.UTF8.GetByteCount(Names[i]);
-                size += sizeof(byte);
-                size += WASMReader.GetLEB128Size(Indices[i]);
+                size += export.GetSize();
             }
             return size;
         }
-
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            int exportCount = Math.Min(Names.Length, Math.Min(Tags.Length, Indices.Length));
-            output.WriteLEB128(exportCount);
-            for (int i = 0; i < exportCount; i++)
+            output.WriteULEB128((uint)Subsections.Count);
+            foreach (ExportSubsection export in Subsections)
             {
-                output.WriteString(Names[i]);
-                output.Write(Tags[i]);
-                output.WriteLEB128(Indices[i]);
+                export.WriteTo(ref output);
             }
         }
     }

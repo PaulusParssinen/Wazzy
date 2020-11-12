@@ -6,17 +6,8 @@ namespace Wazzy.Sections
     {
         public WASMSectionId Id { get; }
 
-        public WASMSection(WASMSectionId id)
-        {
-            Id = id;
-        }
+        public WASMSection(WASMSectionId id) => Id = id;
 
-        public override void WriteTo(ref WASMWriter output)
-        {
-            output.Write((byte)Id);
-            output.WriteULEB128((uint)GetBodySize());
-            WriteBodyTo(ref output);
-        }
         public override int GetSize()
         {
             int sectionSize = GetBodySize();
@@ -25,6 +16,12 @@ namespace Wazzy.Sections
             size += WASMReader.GetULEB128Size((uint)sectionSize);
             size += sectionSize;
             return size;
+        }
+        public override void WriteTo(ref WASMWriter output)
+        {
+            output.Write((byte)Id);
+            output.WriteULEB128((uint)GetBodySize());
+            WriteBodyTo(ref output);
         }
 
         protected abstract int GetBodySize();

@@ -7,54 +7,61 @@ namespace Wazzy.Sections.Subsections
 {
     public class ElementSubsection : WASMObject
     {
-        public int TableIndex { get; set; }
-        public int[] FunctionTypeIndices { get; }
+        public uint TableIndex { get; set; }
+        public List<uint> FunctionTypeIndices { get; }
+        public List<WASMInstruction> Expression { get; }
 
-        public int Offset { get; }
-        public List<WASMInstruction> Expression { get; set; }
-
-        public ElementSubsection(WASMModule module, ref WASMReader input)
+        public ElementSubsection(uint tableIndex = 0)
         {
-            TableIndex = input.ReadIntLEB128();
+            TableIndex = tableIndex;
+            FunctionTypeIndices = new List<uint>();
+            Expression = new List<WASMInstruction>(3);
+        }
+        public ElementSubsection(ref WASMReader input)
+        {
+            TableIndex = input.ReadIntULEB128();
             Expression = input.ReadExpression();
-            Offset = (int)WASMMachine.Execute(Expression, module).Pop();
-            FunctionTypeIndices = new int[input.ReadIntLEB128()];
-            for (int i = 0; i < FunctionTypeIndices.Length; i++)
+            FunctionTypeIndices = new List<uint>((int)input.ReadIntULEB128());
+            for (int i = 0; i < FunctionTypeIndices.Capacity; i++)
             {
-                FunctionTypeIndices[i] = input.ReadIntLEB128();
+                FunctionTypeIndices.Add(input.ReadIntULEB128());
             }
         }
 
-        public override void WriteTo(ref WASMWriter output)
+        public T EvaluateOffset<T>(WASMModule context)
         {
-            output.WriteLEB128(TableIndex);
-            foreach (WASMInstruction instruction in Expression)
-            {
-                instruction.WriteTo(ref output);
-            }
-
-            output.WriteLEB128(FunctionTypeIndices.Length);
-            foreach (int functionTypeIndex in FunctionTypeIndices)
-            {
-                output.WriteLEB128(functionTypeIndex);
-            }
+            return (T)WASMMachine.Execute(Expression, context).Pop();
         }
 
         public override int GetSize()
         {
             int size = 0;
-            size += WASMReader.GetLEB128Size(TableIndex);
+            size += WASMReader.GetULEB128Size(TableIndex);
             foreach (WASMInstruction instruction in Expression)
             {
                 size += instruction.GetSize();
             }
-            
-            size += WASMReader.GetLEB128Size(FunctionTypeIndices.Length);
-            foreach (int functionTypeIndex in FunctionTypeIndices)
+
+            size += WASMReader.GetULEB128Size((uint)FunctionTypeIndices.Count);
+            foreach (uint functionTypeIndex in FunctionTypeIndices)
             {
-                size += WASMReader.GetLEB128Size(functionTypeIndex);
+                size += WASMReader.GetULEB128Size(functionTypeIndex);
             }
             return size;
+        }
+        public override void WriteTo(ref WASMWriter output)
+        {
+            output.WriteULEB128(TableIndex);
+            foreach (WASMInstruction instruction in Expression)
+            {
+                instruction.WriteTo(ref output);
+            }
+
+            output.WriteULEB128((uint)FunctionTypeIndices.Count);
+            foreach (uint functionTypeIndex in FunctionTypeIndices)
+            {
+                output.WriteULEB128(functionTypeIndex);
+            }
         }
     }
 }

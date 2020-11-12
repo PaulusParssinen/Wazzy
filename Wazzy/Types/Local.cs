@@ -6,8 +6,8 @@ namespace Wazzy.Types
 {
     public class Local : WASMType
     {
-        public uint Rank { get; }
-        public Type Type { get; }
+        public uint Rank { get; set; }
+        public Type Type { get; set; }
 
         public Local(ref WASMReader input)
         {
@@ -15,18 +15,11 @@ namespace Wazzy.Types
             Type = input.ReadValueType();
         }
 
+        public override int GetSize() => WASMReader.GetULEB128Size(Rank) + 1;
         public override void WriteTo(ref WASMWriter output)
         {
             output.WriteULEB128(Rank);
             output.Write(Type);
-        }
-
-        public override int GetSize()
-        {
-            int size = 0;
-            size += WASMReader.GetULEB128Size(Rank);
-            size += 1; // Type
-            return size;
         }
     }
 }
