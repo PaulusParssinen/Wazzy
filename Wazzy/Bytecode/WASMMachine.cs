@@ -6,10 +6,7 @@ namespace Wazzy.Bytecode
     {
         public Stack<object> Stack { get; }
 
-        public WASMMachine()
-        {
-            Stack = new Stack<object>();
-        }
+        public WASMMachine() => Stack = new Stack<object>();
 
         public static Stack<object> Execute(IList<WASMInstruction> expression, WASMModule context)
         {
