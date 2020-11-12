@@ -8,12 +8,10 @@ namespace Wazzy.Bytecode.Instructions.Control
 {
     public class IfIns : WASMInstruction
     {
-        public int BlockId { get; set; }
-        public Type BlockType { get; private set; }
-
+        public Type BlockType { get; set; }
+        public int? FunctionTypeIndex { get; set; }
         public List<WASMInstruction> Expression { get; }
         public List<WASMInstruction> ElseExpression { get; }
-
         public bool HasElseExpression => ElseExpression?.Count > 0;
 
         public IfIns()
@@ -25,12 +23,20 @@ namespace Wazzy.Bytecode.Instructions.Control
         public IfIns(ref WASMReader input)
             : base(OPCode.If)
         {
-            BlockId = input.ReadIntLEB128();
-            if (WASMType.IsSupportedType(BlockId))
+            byte blockId = input.ReadByte();
+            if (blockId == 0x40)
             {
-                BlockType = WASMType.GetType((byte)BlockId);
+                BlockType = typeof(void);
             }
-            else if (BlockId == 0x40) BlockType = typeof(void);
+            else if (WASMType.IsSupportedValueTypeId(blockId))
+            {
+                BlockType = WASMType.GetValueType(blockId);
+            }
+            else // This is an index to a function type.
+            {
+                input.Position--;
+                FunctionTypeIndex = input.ReadIntLEB128();
+            }
 
             Expression = input.ReadExpression(OPCode.Else);
             if (Expression[^1].OP == OPCode.Else)
@@ -42,24 +48,33 @@ namespace Wazzy.Bytecode.Instructions.Control
 
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteLEB128(BlockId);
+            if (FunctionTypeIndex != null)
+            {
+                output.WriteLEB128((int)FunctionTypeIndex);
+            }
+            else output.Write(BlockType);
             foreach (WASMInstruction instruction in Expression)
             {
                 instruction.WriteTo(ref output);
             }
-            if (ElseExpression.Count == 0) return;
-
-            output.Write((byte)OPCode.Else);
-            foreach (WASMInstruction instruction in ElseExpression)
+            if (ElseExpression.Count > 0)
             {
-                instruction.WriteTo(ref output);
+                output.Write((byte)OPCode.Else);
+                foreach (WASMInstruction instruction in ElseExpression)
+                {
+                    instruction.WriteTo(ref output);
+                }
             }
         }
 
         protected override int GetBodySize()
         {
             int size = 0;
-            size += WASMReader.GetLEB128Size(BlockId);
+            if (FunctionTypeIndex != null)
+            {
+                size += WASMReader.GetLEB128Size((int)FunctionTypeIndex);
+            }
+            else size += 1; // Type
             foreach (WASMInstruction instruction in Expression)
             {
                 size += instruction.GetSize();

@@ -8,8 +8,8 @@ namespace Wazzy.Bytecode.Instructions.Control
 {
     public class BlockIns : WASMInstruction
     {
-        public int BlockId { get; set; }
-        public Type BlockType { get; private set; }
+        public Type BlockType { get; set; }
+        public int? FunctionTypeIndex { get; set; }
         public List<WASMInstruction> Expression { get; }
 
         public BlockIns()
@@ -20,18 +20,30 @@ namespace Wazzy.Bytecode.Instructions.Control
         public BlockIns(ref WASMReader input)
             : base(OPCode.Block)
         {
-            BlockId = input.ReadIntLEB128();
-            if (WASMType.IsSupportedType(BlockId))
+            byte blockId = input.ReadByte();
+            if (blockId == 0x40)
             {
-                BlockType = WASMType.GetType(BlockId);
+                BlockType = typeof(void);
             }
-            else if (BlockId == 0x40) BlockType = typeof(void);
+            else if (WASMType.IsSupportedValueTypeId(blockId))
+            {
+                BlockType = WASMType.GetValueType(blockId);
+            }
+            else // This is an index to a function type.
+            {
+                input.Position--;
+                FunctionTypeIndex = input.ReadIntLEB128();
+            }
             Expression = input.ReadExpression();
         }
 
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteLEB128(BlockId);
+            if (FunctionTypeIndex != null)
+            {
+                output.WriteLEB128((int)FunctionTypeIndex);
+            }
+            else output.Write(BlockType);
             foreach (WASMInstruction instruction in Expression)
             {
                 instruction.WriteTo(ref output);
@@ -41,7 +53,11 @@ namespace Wazzy.Bytecode.Instructions.Control
         protected override int GetBodySize()
         {
             int size = 0;
-            size += WASMReader.GetLEB128Size(BlockId);
+            if (FunctionTypeIndex != null)
+            {
+                size += WASMReader.GetLEB128Size((int)FunctionTypeIndex);
+            }
+            else size += 1; // Type
             foreach (var instruction in Expression)
             {
                 size += instruction.GetSize();
