@@ -17,7 +17,7 @@ namespace Wazzy
 
         private ReadOnlyMemory<byte> _data;
         private readonly SortedDictionary<WASMSectionId, WASMSection> _sections;
-        
+
         public WASMSection this[WASMSectionId id] => _sections[id];
 
         #region Section Properties
@@ -130,7 +130,7 @@ namespace Wazzy
         public bool TryGetSection(WASMSectionId id, out WASMSection section) => _sections.TryGetValue(id, out section);
 
         public void Disassemble()
-        {   
+        {
             var input = new WASMReader(_data.Span);
             input.Position = HEADER_SIZE;
 
@@ -139,7 +139,7 @@ namespace Wazzy
                 var id = (WASMSectionId)input.ReadByte();
                 int length = (int)input.ReadIntULEB128();
                 WASMSection section = ParseSection(id, length, ref input); // This will override any section that was set prior to calling Disassemble().
-                
+
                 if (id == WASMSectionId.CustomSection)
                 {
                     CustomSections.Add((CustomSection)section);
@@ -185,9 +185,9 @@ namespace Wazzy
             WASMSectionId.GlobalSection => GlobalSec = new GlobalSection(ref input),
             WASMSectionId.ExportSection => ExportSec = new ExportSection(ref input),
             WASMSectionId.StartSection => StartSec = new StartSection(ref input),
-            WASMSectionId.ElementSection => ElementSec = new ElementSection(this, ref input),
+            WASMSectionId.ElementSection => ElementSec = new ElementSection(ref input),
             WASMSectionId.CodeSection => CodeSec = new CodeSection(ref input),
-            WASMSectionId.DataSection => DataSec = new DataSection(this, ref input),
+            WASMSectionId.DataSection => DataSec = new DataSection(ref input),
 
             _ => throw new Exception($"Unable to determine section type. {id}(0x{id:X})")
         };
