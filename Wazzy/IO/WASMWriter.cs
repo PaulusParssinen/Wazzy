@@ -3,6 +3,8 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
+using Wazzy.Types;
+
 namespace Wazzy.IO
 {
     public ref struct WASMWriter
@@ -19,17 +21,8 @@ namespace Wazzy.IO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(byte value) => _data[_position++] = value;
 
-        public void Write(ReadOnlySpan<byte> value)
-        {
-            value.CopyTo(_data.Slice(_position));
-            _position += value.Length;
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write(bool value)
-        {
-            _data[_position++] = Unsafe.As<bool, byte>(ref value);
-        }
+        public void Write(bool value) => _data[_position++] = Unsafe.As<bool, byte>(ref value);
 
         public void Write(int value)
         {
@@ -51,6 +44,12 @@ namespace Wazzy.IO
             MemoryMarshal.Write(_data.Slice(_position), ref value);
             _position += sizeof(double);
         }
+        public void Write(ReadOnlySpan<byte> value)
+        {
+            value.CopyTo(_data.Slice(_position));
+            _position += value.Length;
+        }
+        public void Write(Type valueType) => Write(WASMType.GetValueTypeId(valueType));
 
         public void WriteLEB128(long value)
         {
@@ -79,17 +78,6 @@ namespace Wazzy.IO
             _data[_position - 1] &= 0x7F;
         }
 
-        public void Write(Type valueType)
-        {
-            switch (Type.GetTypeCode(valueType))
-            {
-                case TypeCode.Int32: Write((byte)0x7F); break;
-                case TypeCode.Int64: Write((byte)0x7E); break;
-                case TypeCode.Single: Write((byte)0x7D); break;
-                case TypeCode.Double: Write((byte)0x7C); break;
-                default: break;
-            }
-        }
         public void WriteString(ReadOnlySpan<char> value)
         {
             WriteULEB128((uint)value.Length);

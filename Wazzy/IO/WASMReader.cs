@@ -152,7 +152,7 @@ namespace Wazzy.IO
         public static int GetULEB128Size(ulong value)
         {
             // Black magic provided to us kindly by AOSP source <3, modified for 64-bit values
-            
+
             // bits_to_encode = (data != 0) ? 64 - CLZ(x) : 1  // 64 - CLZ(data | 1)
             // bytes = ceil(bits_to_encode / 7.0);             // (6 + bits_to_encode) / 7
             int x = 6 + 64 - BitOperations.LeadingZeroCount(value | 1UL);
@@ -177,7 +177,7 @@ namespace Wazzy.IO
         public string ReadString() => ReadString((int)ReadIntULEB128());
         public string ReadString(int length) => Encoding.UTF8.GetString(ReadBytes(length));
 
-        public Type ReadValueType() => WASMType.GetType(ReadByte());
+        public Type ReadValueType() => WASMType.GetValueType(ReadByte());
 
         public List<WASMInstruction> ReadExpression() => ReadExpression(-1, null);
         public List<WASMInstruction> ReadExpression(int byteReadLimit) => ReadExpression(byteReadLimit, null);
@@ -195,11 +195,9 @@ namespace Wazzy.IO
                 expression.Add(instruction);
                 if (byteReadLimit == -1) // Nested expression, return to upper level if marked as exit operation code.
                 {
-                    //if (op == OPCode.Block) break;
                     if (op == OPCode.End || additionalExitOperationCodes.Contains(op)) break; // Not sure I'm liking this .Contains call...
                 }
                 else if (Position - startExpression >= byteReadLimit) break; // Maximum bytes have been read from the highest scope/expression, exit regardless of operation exit code?
-
             }
             return expression;
         }
