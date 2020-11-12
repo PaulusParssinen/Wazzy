@@ -23,17 +23,8 @@ namespace Wazzy.Bytecode
         public virtual void Execute(Stack<object> stack, WASMModule context)
         { }
 
-        public override int GetSize()
-        {
-            int size = 0;
-            size += sizeof(byte);
-            size += GetBodySize();
-            return size;
-        }
-        protected virtual int GetBodySize()
-        {
-            return 0;
-        }
+        protected virtual int GetBodySize() => 0;
+        public override int GetSize() => sizeof(OPCode) + GetBodySize();
 
         public override void WriteTo(ref WASMWriter output)
         {
@@ -43,8 +34,7 @@ namespace Wazzy.Bytecode
         protected virtual void WriteBodyTo(ref WASMWriter output)
         { }
 
-        public static WASMInstruction Create(ref WASMReader input) => Create((OPCode)input.ReadByte(), ref input);
-        public static WASMInstruction Create(OPCode op, ref WASMReader input) => op switch
+        public static WASMInstruction Create(ref WASMReader input, OPCode op) => op switch
         {
             // Control
             OPCode.Unreachable => new UnreachableIns(),
@@ -138,6 +128,10 @@ namespace Wazzy.Bytecode
             OPCode.MaxF64 => new MaxF64Ins(),
             OPCode.MinF64 => new MinF64Ins(),
             OPCode.NegateF32 => new NegateF32Ins(),
+            OPCode.NegateF64 => new NegateF64Ins(),
+            OPCode.DivideF64 => new DivideF64Ins(),
+            OPCode.TruncateF32IntoI32_U => new TruncateF32IntoI32_UIns(),
+            OPCode.GreaterThanF64 => new GreaterThanF64Ins(),
 
             // Variable
             OPCode.GetLocal => new GetLocalIns(ref input),
@@ -157,7 +151,7 @@ namespace Wazzy.Bytecode
             OPCode.LoadF64 => new LoadF64Ins(ref input),
             OPCode.StoreI32 => new StoreI32Ins(ref input),
             OPCode.StoreI32_8 => new StoreI32_8Ins(ref input),
-            OPCode.StoreI32_16=> new StoreI32_16Ins(ref input),
+            OPCode.StoreI32_16 => new StoreI32_16Ins(ref input),
             OPCode.LoadI32_16S => new LoadI32_16SIns(ref input),
             OPCode.StoreI64 => new StoreI64Ins(ref input),
             OPCode.StoreF32 => new StoreF32Ins(ref input),
@@ -166,5 +160,6 @@ namespace Wazzy.Bytecode
 
             _ => throw new NotImplementedException($"This instruction has not yet been implemented or does not exist in the specification. {op}(0x{(byte)op:X2})")
         };
+        public static WASMInstruction Create(ref WASMReader input) => Create(ref input, (OPCode)input.ReadByte());
     }
 }
