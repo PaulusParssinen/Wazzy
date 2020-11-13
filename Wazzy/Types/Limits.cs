@@ -8,16 +8,22 @@ namespace Wazzy.Types
     public class Limits : WASMType
     {
         public uint Minimum { get; set; }
-        public uint Maximum { get; set; }
-        public bool HasMaximum { get; set; }
+        public uint Maximum { get; set; } = uint.MaxValue;
 
-        internal string DebuggerDisplay => $"Min: {Minimum:n0}; Max: {(HasMaximum ? Maximum : uint.MaxValue):n0}";
+        public bool HasMaximum => Maximum != uint.MaxValue;
 
+        internal string DebuggerDisplay => $"Min: {Minimum:n0}; Max: {Maximum:n0}";
+
+        public Limits(uint minimum, uint maximum = uint.MaxValue)
+        {
+            Minimum = minimum;
+            Maximum = maximum;
+        }
         public Limits(ref WASMReader input)
         {
-            HasMaximum = input.ReadBoolean();
+            bool hasMaximum = input.ReadBoolean();
             Minimum = input.ReadIntULEB128();
-            if (HasMaximum)
+            if (hasMaximum)
             {
                 Maximum = input.ReadIntULEB128();
             }
