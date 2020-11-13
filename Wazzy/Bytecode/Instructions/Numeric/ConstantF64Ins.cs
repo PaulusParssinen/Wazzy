@@ -22,11 +22,10 @@ namespace Wazzy.Bytecode.Instructions.Numeric
             stack.Push(Constant);
         }
 
+        protected override int GetBodySize() => sizeof(double);
         protected override void WriteBodyTo(ref WASMWriter output)
         {
             output.Write(Constant);
         }
-
-        protected override int GetBodySize() => sizeof(double);
     }
 }

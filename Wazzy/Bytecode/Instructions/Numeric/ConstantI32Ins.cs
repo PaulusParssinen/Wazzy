@@ -26,7 +26,6 @@ namespace Wazzy.Bytecode.Instructions.Numeric
         {
             output.WriteLEB128(Constant);
         }
-
         protected override int GetBodySize() => WASMReader.GetLEB128Size(Constant);
     }
 }
