@@ -1,4 +1,4 @@
-﻿//#define Peanut_Debugging
+﻿using System;
 using System.Collections.Generic;
 
 using Wazzy.IO;
@@ -9,43 +9,24 @@ namespace Wazzy.Sections.Subsections
 {
     public class CodeSubsection : WASMObject
     {
-        public byte[] Body { get; set; }
         public List<Local> Locals { get; }
         public List<WASMInstruction> Expression { get; }
 
         public CodeSubsection(ref WASMReader input)
         {
             int funcSize = (int)input.ReadIntULEB128();
-#if Peanut_Debugging
-        DataStart: // Are you judging me right now? 
-#endif
-            int startOfSubsection = input.Position;
+            int funcEnd = input.Position + funcSize;
+
             Locals = new List<Local>((int)input.ReadIntULEB128());
             for (int i = 0; i < Locals.Capacity; i++)
             {
                 Locals.Add(new Local(ref input));
             }
-
-            int startOfBytecode = input.Position;
-            int sizeOfBytecode = funcSize - (startOfBytecode - startOfSubsection);
-#if Peanut_Debugging
-            try
+            Expression = input.ReadExpression();
+            if (funcEnd != input.Position)
             {
-                Expression = input.ReadExpression();
+                throw new Exception("Malformed subsection, since the expected ending position did not match the actual ending position.");
             }
-            catch(System.Exception e) { System.Diagnostics.Debugger.Break(); }
-#else
-            Body = input.ReadBytes(sizeOfBytecode).ToArray();
-#endif
-#if Peanut_Debugging
-            int bytesRead = input.Position - startOfBytecode;
-            if (bytesRead != sizeOfBytecode)
-            {
-                System.Diagnostics.Debugger.Break();
-                input.Position = startOfSubsection;
-                goto DataStart; // Abort Abort
-            }
-#endif
         }
 
         public override int GetSize()
@@ -56,7 +37,11 @@ namespace Wazzy.Sections.Subsections
             {
                 size += local.GetSize();
             }
-            size += Body.Length;
+
+            foreach (WASMInstruction instruction in Expression)
+            {
+                size += instruction.GetSize();
+            }
 
             // Finally calculate the real size
             size += WASMReader.GetULEB128Size((uint)size);
@@ -70,7 +55,11 @@ namespace Wazzy.Sections.Subsections
             {
                 funcSize += local.GetSize();
             }
-            funcSize += Body.Length;
+
+            foreach (WASMInstruction instruction in Expression)
+            {
+                funcSize += instruction.GetSize();
+            }
 
             output.WriteULEB128((uint)funcSize);
             output.WriteULEB128((uint)Locals.Count);
@@ -78,7 +67,11 @@ namespace Wazzy.Sections.Subsections
             {
                 local.WriteTo(ref output);
             }
-            output.Write(Body);
+
+            foreach (WASMInstruction instruction in Expression)
+            {
+                instruction.WriteTo(ref output);
+            }
         }
     }
 }
