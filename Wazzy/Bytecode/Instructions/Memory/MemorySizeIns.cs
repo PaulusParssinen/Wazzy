@@ -19,7 +19,5 @@ namespace Wazzy.Bytecode.Instructions.Memory
         {
             output.Write(Index);
         }
-
-        protected override int GetBodySize() => sizeof(byte);
     }
 }

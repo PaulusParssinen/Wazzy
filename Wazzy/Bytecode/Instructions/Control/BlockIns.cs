@@ -37,19 +37,6 @@ namespace Wazzy.Bytecode.Instructions.Control
             Expression = input.ReadExpression();
         }
 
-        protected override void WriteBodyTo(ref WASMWriter output)
-        {
-            if (FunctionTypeIndex != null)
-            {
-                output.WriteLEB128((int)FunctionTypeIndex);
-            }
-            else output.Write(BlockType);
-            foreach (WASMInstruction instruction in Expression)
-            {
-                instruction.WriteTo(ref output);
-            }
-        }
-
         protected override int GetBodySize()
         {
             int size = 0;
@@ -58,11 +45,28 @@ namespace Wazzy.Bytecode.Instructions.Control
                 size += WASMReader.GetLEB128Size((int)FunctionTypeIndex);
             }
             else size += 1; // Type
+
             foreach (var instruction in Expression)
             {
                 size += instruction.GetSize();
             }
             return size;
+        }
+        protected override void WriteBodyTo(ref WASMWriter output)
+        {
+            if (FunctionTypeIndex != null)
+            {
+                output.WriteLEB128((int)FunctionTypeIndex);
+            }
+            else if (BlockType == typeof(void))
+            {
+                output.Write((byte)0x40);
+            }
+            else output.Write(BlockType);
+            foreach (WASMInstruction instruction in Expression)
+            {
+                instruction.WriteTo(ref output);
+            }
         }
     }
 }

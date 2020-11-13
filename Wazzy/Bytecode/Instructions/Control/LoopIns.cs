@@ -43,6 +43,10 @@ namespace Wazzy.Bytecode.Instructions.Control
             {
                 output.WriteLEB128((int)FunctionTypeIndex);
             }
+            else if (BlockType == typeof(void))
+            {
+                output.Write((byte)0x40);
+            }
             else output.Write(BlockType);
             foreach (WASMInstruction instruction in Expression)
             {

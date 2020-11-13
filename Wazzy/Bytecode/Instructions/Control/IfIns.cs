@@ -52,12 +52,17 @@ namespace Wazzy.Bytecode.Instructions.Control
             {
                 output.WriteLEB128((int)FunctionTypeIndex);
             }
+            else if (BlockType == typeof(void))
+            {
+                output.Write((byte)0x40);
+            }
             else output.Write(BlockType);
+
             foreach (WASMInstruction instruction in Expression)
             {
                 instruction.WriteTo(ref output);
             }
-            if (ElseExpression.Count > 0)
+            if (HasElseExpression)
             {
                 output.Write((byte)OPCode.Else);
                 foreach (WASMInstruction instruction in ElseExpression)
@@ -82,6 +87,7 @@ namespace Wazzy.Bytecode.Instructions.Control
 
             if (HasElseExpression)
             {
+                size += 1;
                 foreach (WASMInstruction instruction in ElseExpression)
                 {
                     size += instruction.GetSize();

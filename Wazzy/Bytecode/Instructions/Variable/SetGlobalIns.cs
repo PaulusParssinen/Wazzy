@@ -4,22 +4,21 @@ namespace Wazzy.Bytecode.Instructions.Variable
 {
     public class SetGlobalIns : WASMInstruction
     {
-        public int Id { get; set; }
+        public uint Index { get; set; }
 
-        public SetGlobalIns(int id = 0)
+        public SetGlobalIns(uint index = 0)
             : base(OPCode.SetGlobal)
         {
-            Id = id;
+            Index = index;
         }
         public SetGlobalIns(ref WASMReader input)
-            : this(input.ReadIntLEB128())
+            : this(input.ReadIntULEB128())
         { }
 
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteLEB128(Id);
+            output.WriteULEB128(Index);
         }
-
-        protected override int GetBodySize() => WASMReader.GetLEB128Size(Id);
+        protected override int GetBodySize() => WASMReader.GetULEB128Size(Index);
     }
 }

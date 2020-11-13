@@ -6,27 +6,26 @@ namespace Wazzy.Bytecode.Instructions.Variable
 {
     public class GetGlobalIns : WASMInstruction
     {
-        public int Id { get; set; }
+        public uint Index { get; set; }
 
-        public GetGlobalIns(int id = 0)
+        public GetGlobalIns(uint index = 0)
             : base(OPCode.GetGlobal)
         {
-            Id = id;
+            Index = index;
         }
         public GetGlobalIns(ref WASMReader input)
-            : this(input.ReadIntLEB128())
+            : this(input.ReadIntULEB128())
         { }
 
         public override void Execute(Stack<object> stack, WASMModule context)
         {
-            WASMMachine.Execute(context.GlobalSec[Id].Expression, context, stack);
+            WASMMachine.Execute(context.GlobalSec[(int)Index].Expression, context, stack);
         }
 
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteLEB128(Id);
+            output.WriteULEB128(Index);
         }
-
-        protected override int GetBodySize() => WASMReader.GetLEB128Size(Id);
+        protected override int GetBodySize() => WASMReader.GetULEB128Size(Index);
     }
 }

@@ -4,12 +4,12 @@ namespace Wazzy.Bytecode.Instructions.Control
 {
     public class CallIns : WASMInstruction
     {
-        public int FunctionIndex { get; set; }
+        public uint FunctionIndex { get; set; }
 
         public CallIns(ref WASMReader input)
-            : this(input.ReadIntLEB128())
+            : this(input.ReadIntULEB128())
         { }
-        public CallIns(int functionIndex = 0)
+        public CallIns(uint functionIndex = 0)
             : base(OPCode.Call)
         {
             FunctionIndex = functionIndex;
@@ -17,9 +17,8 @@ namespace Wazzy.Bytecode.Instructions.Control
 
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteLEB128(FunctionIndex);
+            output.WriteULEB128(FunctionIndex);
         }
-
-        protected override int GetBodySize() => WASMReader.GetLEB128Size(FunctionIndex);
+        protected override int GetBodySize() => WASMReader.GetULEB128Size(FunctionIndex);
     }
 }
