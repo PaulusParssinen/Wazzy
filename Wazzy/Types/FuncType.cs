@@ -48,7 +48,21 @@ namespace Wazzy.Types
                 ResultTypes.Add(input.ReadValueType());
             }
         }
+        public FuncType(IList<Type> parameterTypes, IList<Type> resultTypes)
+        {
+            ResultTypes = new List<Type>(resultTypes ?? Array.Empty<Type>());
+            ParameterTypes = new List<Type>(parameterTypes ?? Array.Empty<Type>());
+        }
 
+        public override int GetSize()
+        {
+            int size = 0;
+            size += WASMReader.GetULEB128Size((uint)ParameterTypes.Count);
+            size += ParameterTypes.Count * sizeof(byte);
+            size += WASMReader.GetULEB128Size((uint)ResultTypes.Count);
+            size += ResultTypes.Count * sizeof(byte);
+            return size;
+        }
         public override void WriteTo(ref WASMWriter output)
         {
             output.WriteULEB128((uint)ParameterTypes.Count);
@@ -62,16 +76,6 @@ namespace Wazzy.Types
             {
                 output.Write(resultType);
             }
-        }
-
-        public override int GetSize()
-        {
-            int size = 0;
-            size += WASMReader.GetULEB128Size((uint)ParameterTypes.Count);
-            size += ParameterTypes.Count * sizeof(byte);
-            size += WASMReader.GetULEB128Size((uint)ResultTypes.Count);
-            size += ResultTypes.Count * sizeof(byte);
-            return size;
         }
     }
 }
