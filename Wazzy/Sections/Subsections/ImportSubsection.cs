@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Diagnostics;
 
 using Wazzy.IO;
@@ -29,6 +28,36 @@ namespace Wazzy.Sections.Subsections
                 ImpexDesc.Global => new GlobalType(ref input),
                 _ => throw new Exception("Failed to identify import type.")
             };
+        }
+
+        private ImportSubsection(string module, string name)
+        {
+            Name = name;
+            Module = module;
+        }
+        public ImportSubsection(string module, string name, TableType table)
+            : this(module, name)
+        {
+            Value = table;
+            Description = ImpexDesc.Table;
+        }
+        public ImportSubsection(string module, string name, MemoryType memory)
+            : this(module, name)
+        {
+            Value = memory;
+            Description = ImpexDesc.Memory;
+        }
+        public ImportSubsection(string module, string name, GlobalType global)
+            : this(module, name)
+        {
+            Value = global;
+            Description = ImpexDesc.Global;
+        }
+        public ImportSubsection(string module, string name, uint functionIndex)
+            : this(module, name)
+        {
+            Value = functionIndex;
+            Description = ImpexDesc.Function;
         }
 
         public override int GetSize()
