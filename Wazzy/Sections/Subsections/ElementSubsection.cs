@@ -8,23 +8,23 @@ namespace Wazzy.Sections.Subsections
     public class ElementSubsection : WASMObject
     {
         public uint TableIndex { get; set; }
-        public List<uint> FunctionTypeIndices { get; }
+        public List<uint> FunctionIndices { get; }
         public List<WASMInstruction> Expression { get; }
 
         public ElementSubsection(uint tableIndex = 0)
         {
             TableIndex = tableIndex;
-            FunctionTypeIndices = new List<uint>();
+            FunctionIndices = new List<uint>();
             Expression = new List<WASMInstruction>(3);
         }
         public ElementSubsection(ref WASMReader input)
         {
             TableIndex = input.ReadIntULEB128();
             Expression = input.ReadExpression();
-            FunctionTypeIndices = new List<uint>((int)input.ReadIntULEB128());
-            for (int i = 0; i < FunctionTypeIndices.Capacity; i++)
+            FunctionIndices = new List<uint>((int)input.ReadIntULEB128());
+            for (int i = 0; i < FunctionIndices.Capacity; i++)
             {
-                FunctionTypeIndices.Add(input.ReadIntULEB128());
+                FunctionIndices.Add(input.ReadIntULEB128());
             }
         }
 
@@ -42,8 +42,8 @@ namespace Wazzy.Sections.Subsections
                 size += instruction.GetSize();
             }
 
-            size += WASMReader.GetULEB128Size((uint)FunctionTypeIndices.Count);
-            foreach (uint functionTypeIndex in FunctionTypeIndices)
+            size += WASMReader.GetULEB128Size((uint)FunctionIndices.Count);
+            foreach (uint functionTypeIndex in FunctionIndices)
             {
                 size += WASMReader.GetULEB128Size(functionTypeIndex);
             }
@@ -57,8 +57,8 @@ namespace Wazzy.Sections.Subsections
                 instruction.WriteTo(ref output);
             }
 
-            output.WriteULEB128((uint)FunctionTypeIndices.Count);
-            foreach (uint functionTypeIndex in FunctionTypeIndices)
+            output.WriteULEB128((uint)FunctionIndices.Count);
+            foreach (uint functionTypeIndex in FunctionIndices)
             {
                 output.WriteULEB128(functionTypeIndex);
             }
