@@ -34,7 +34,7 @@ namespace Wazzy.Bytecode
         protected virtual void WriteBodyTo(ref WASMWriter output)
         { }
 
-        public static WASMInstruction Create(ref WASMReader input, OPCode op) => op switch
+        public static WASMInstruction Create(ref WASMReader input, OPCode op, IFunctionIndexAdjuster functionIndexAdjuster = null) => op switch
         {
             // Control
             OPCode.Unreachable => new UnreachableIns(),
@@ -47,7 +47,7 @@ namespace Wazzy.Bytecode
             OPCode.BranchTable => new BranchTableIns(ref input),
             OPCode.Else => new ElseIns(),
             OPCode.Return => new ReturnIns(),
-            OPCode.Call => new CallIns(ref input),
+            OPCode.Call => new CallIns(ref input, functionIndexAdjuster),
             OPCode.CallIndirect => new CallIndirectIns(ref input),
             OPCode.End => new EndIns(),
 

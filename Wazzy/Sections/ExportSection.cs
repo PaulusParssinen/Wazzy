@@ -5,13 +5,13 @@ namespace Wazzy.Sections
 {
     public class ExportSection : WASMSectionEnumerable<ExportSubsection>
     {
-        public ExportSection(ref WASMReader input)
+        public ExportSection(ref WASMReader input, IFunctionIndexAdjuster functionIndexAdjuster = null)
             : base(WASMSectionId.ExportSection)
         {
             Capacity = (int)input.ReadIntULEB128();
             for (int i = 0; i < Capacity; i++)
             {
-                Add(new ExportSubsection(ref input));
+                Add(new ExportSubsection(ref input, functionIndexAdjuster));
             }
         }
 

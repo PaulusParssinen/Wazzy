@@ -7,6 +7,8 @@ namespace Wazzy.Sections.Subsections
 {
     public class ElementSubsection : WASMObject
     {
+        private readonly IFunctionIndexAdjuster _functionIndexAdjuster;
+
         public uint TableIndex { get; set; }
         public List<uint> FunctionIndices { get; }
         public List<WASMInstruction> Expression { get; }
@@ -17,8 +19,10 @@ namespace Wazzy.Sections.Subsections
             FunctionIndices = new List<uint>();
             Expression = new List<WASMInstruction>(3);
         }
-        public ElementSubsection(ref WASMReader input)
+        public ElementSubsection(ref WASMReader input, IFunctionIndexAdjuster functionIndexAdjuster = null)
         {
+            _functionIndexAdjuster = functionIndexAdjuster;
+
             TableIndex = input.ReadIntULEB128();
             Expression = input.ReadExpression();
             FunctionIndices = new List<uint>((int)input.ReadIntULEB128());
@@ -45,7 +49,7 @@ namespace Wazzy.Sections.Subsections
             size += WASMReader.GetULEB128Size((uint)FunctionIndices.Count);
             foreach (uint functionIndex in FunctionIndices)
             {
-                size += WASMReader.GetULEB128Size(functionIndex);
+                size += WASMReader.GetULEB128Size(functionIndex + (_functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0));
             }
             return size;
         }
@@ -60,7 +64,7 @@ namespace Wazzy.Sections.Subsections
             output.WriteULEB128((uint)FunctionIndices.Count);
             foreach (uint functionIndex in FunctionIndices)
             {
-                output.WriteULEB128(functionIndex);
+                output.WriteULEB128(functionIndex + (_functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0));
             }
         }
     }
