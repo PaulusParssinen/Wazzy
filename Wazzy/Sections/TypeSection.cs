@@ -21,19 +21,19 @@ namespace Wazzy.Sections
         public TypeSection(ref WASMReader input)
             : this()
         {
-            Subsections.Capacity = (int)input.ReadIntULEB128();
-            for (int i = 0; i < Subsections.Capacity; i++)
+            Capacity = (int)input.ReadIntULEB128();
+            for (int i = 0; i < Capacity; i++)
             {
                 input.ReadByte(); // FUNCTION_TYPE = 0x60
                 Add(new FuncType(ref input));
             }
         }
 
-        protected override void SubsectionsCleared()
+        protected override void Cleared()
         {
             _functionTypesByParameterCount.Clear();
         }
-        protected override void SubsectionAdded(FuncType subsection)
+        protected override void Added(int index, FuncType subsection)
         {
             if (!_functionTypesByParameterCount.TryGetValue(subsection.ParameterTypes.Count, out IList<FuncType> functionTypes))
             {
@@ -42,7 +42,7 @@ namespace Wazzy.Sections
             }
             functionTypes.Add(subsection);
         }
-        protected override void SubsectionRemoved(FuncType subsection)
+        protected override void Removed(int index, FuncType subsection)
         {
             if (_functionTypesByParameterCount.TryGetValue(subsection.ParameterTypes.Count, out IList<FuncType> functionTypes))
             {
@@ -76,6 +76,15 @@ namespace Wazzy.Sections
         {
             return AddOrFindVoidType(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
         }
+        public uint AddOrFindVoidType<T1, T2, T3, T4, T5>()
+            where T1 : struct
+            where T2 : struct
+            where T3 : struct
+            where T4 : struct
+            where T5 : struct
+        {
+            return AddOrFindVoidType(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5));
+        }
         public uint AddOrFindVoidType(params Type[] types)
         {
             if (_functionTypesByParameterCount.TryGetValue(types.Length, out IList<FuncType> functionTypes))
@@ -90,17 +99,14 @@ namespace Wazzy.Sections
                     }
                 }
             }
-
-            var index = (uint)Count;
-            Add(new FuncType(types, null));
-            return index;
+            return (uint)Add(new FuncType(types, Array.Empty<Type>()));
         }
-
+        
         protected override int GetBodySize()
         {
             int size = 0;
-            size += WASMReader.GetULEB128Size((uint)Subsections.Count);
-            foreach (FuncType functionType in Subsections)
+            size += WASMReader.GetULEB128Size((uint)Count);
+            foreach (FuncType functionType in this)
             {
                 size += sizeof(byte);
                 size += functionType.GetSize();
@@ -111,8 +117,8 @@ namespace Wazzy.Sections
         {
             const byte FUNCTION_TYPE = 0x60;
 
-            output.WriteULEB128((uint)Subsections.Count);
-            foreach (FuncType functionType in Subsections)
+            output.WriteULEB128((uint)Count);
+            foreach (FuncType functionType in this)
             {
                 output.Write(FUNCTION_TYPE);
                 functionType.WriteTo(ref output);
