@@ -10,7 +10,7 @@ using Wazzy.Sections;
 
 namespace Wazzy
 {
-    public class WASMModule : IEnumerable<WASMSection>
+    public class WASMModule : IEnumerable<WASMSection>, IFunctionIndexAdjuster
     {
         private const int HEADER_SIZE = 8;
         private const uint MAGIC_HEADER = 0x6D736100;
@@ -18,6 +18,7 @@ namespace Wazzy
         private ReadOnlyMemory<byte> _data;
         private readonly SortedDictionary<WASMSectionId, WASMSection> _sections;
 
+        public uint Version { get; }
         public WASMSection this[WASMSectionId id] => _sections[id];
 
         #region Section Properties
@@ -101,14 +102,12 @@ namespace Wazzy
         }
         #endregion
 
-        public uint Version { get; }
-
         public WASMModule()
         {
             _sections = new SortedDictionary<WASMSectionId, WASMSection>();
-            CustomSections = new List<CustomSection>();
 
             Version = 1;
+            CustomSections = new List<CustomSection>();
         }
         public WASMModule(string path)
             : this(File.ReadAllBytes(path))
@@ -126,14 +125,14 @@ namespace Wazzy
             Version = input.ReadUInt32();
         }
 
-        public bool ContainsSection(WASMSectionId id) => _sections.ContainsKey(id);
+        public bool Contains(WASMSectionId id) => _sections.ContainsKey(id);
         public bool TryGetSection(WASMSectionId id, out WASMSection section) => _sections.TryGetValue(id, out section);
+
+        public uint GetFunctionIndexOffset() => (uint)ImportSec.FreshlyImportedFunctions.Count;
 
         public void Disassemble()
         {
-            var input = new WASMReader(_data.Span);
-            input.Position = HEADER_SIZE;
-
+            var input = new WASMReader(_data.Span.Slice(HEADER_SIZE), this);
             while (input.IsDataAvailable)
             {
                 var id = (WASMSectionId)input.ReadByte();
@@ -183,9 +182,9 @@ namespace Wazzy
             WASMSectionId.TableSection => TableSec = new TableSection(ref input),
             WASMSectionId.MemorySection => MemorySec = new MemorySection(ref input),
             WASMSectionId.GlobalSection => GlobalSec = new GlobalSection(ref input),
-            WASMSectionId.ExportSection => ExportSec = new ExportSection(ref input),
+            WASMSectionId.ExportSection => ExportSec = new ExportSection(ref input, this),
             WASMSectionId.StartSection => StartSec = new StartSection(ref input),
-            WASMSectionId.ElementSection => ElementSec = new ElementSection(ref input),
+            WASMSectionId.ElementSection => ElementSec = new ElementSection(ref input, this),
             WASMSectionId.CodeSection => CodeSec = new CodeSection(ref input),
             WASMSectionId.DataSection => DataSec = new DataSection(ref input),
 
