@@ -53,10 +53,10 @@ namespace Wazzy.Sections.Subsections
             Value = global;
             Description = ImpexDesc.Global;
         }
-        public ImportSubsection(string module, string name, uint functionIndex)
+        public ImportSubsection(string module, string name, uint functionTypeIndex)
             : this(module, name)
         {
-            Value = functionIndex;
+            Value = functionTypeIndex;
             Description = ImpexDesc.Function;
         }
 
