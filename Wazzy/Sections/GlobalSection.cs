@@ -8,8 +8,8 @@ namespace Wazzy.Sections
         public GlobalSection(ref WASMReader input)
             : base(WASMSectionId.GlobalSection)
         {
-            Subsections.Capacity = (int)input.ReadIntULEB128();
-            for (int i = 0; i < Subsections.Capacity; i++)
+            Capacity = (int)input.ReadIntULEB128();
+            for (int i = 0; i < Capacity; i++)
             {
                 Add(new GlobalSubsection(ref input));
             }
@@ -18,8 +18,8 @@ namespace Wazzy.Sections
         protected override int GetBodySize()
         {
             int size = 0;
-            size += WASMReader.GetULEB128Size((uint)Subsections.Count);
-            foreach (GlobalSubsection global in Subsections)
+            size += WASMReader.GetULEB128Size((uint)Count);
+            foreach (GlobalSubsection global in this)
             {
                 size += global.GetSize();
             }
@@ -27,8 +27,8 @@ namespace Wazzy.Sections
         }
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteULEB128((uint)Subsections.Count);
-            foreach (GlobalSubsection global in Subsections)
+            output.WriteULEB128((uint)Count);
+            foreach (GlobalSubsection global in this)
             {
                 global.WriteTo(ref output);
             }

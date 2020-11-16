@@ -8,8 +8,8 @@ namespace Wazzy.Sections
         public CodeSection(ref WASMReader input)
             : base(WASMSectionId.CodeSection)
         {
-            Subsections.Capacity = (int)input.ReadIntULEB128();
-            for (int i = 0; i < Subsections.Capacity; i++)
+            Capacity = (int)input.ReadIntULEB128();
+            for (int i = 0; i < Capacity; i++)
             {
                 Add(new CodeSubsection(ref input));
             }
@@ -18,8 +18,8 @@ namespace Wazzy.Sections
         protected override int GetBodySize()
         {
             int size = 0;
-            size += WASMReader.GetULEB128Size((uint)Subsections.Count);
-            foreach (CodeSubsection code in Subsections)
+            size += WASMReader.GetULEB128Size((uint)Count);
+            foreach (CodeSubsection code in this)
             {
                 size += code.GetSize();
             }
@@ -27,8 +27,8 @@ namespace Wazzy.Sections
         }
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteULEB128((uint)Subsections.Count);
-            foreach (CodeSubsection code in Subsections)
+            output.WriteULEB128((uint)Count);
+            foreach (CodeSubsection code in this)
             {
                 code.WriteTo(ref output);
             }
