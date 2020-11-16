@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Numerics;
 using System.Collections.Generic;
@@ -184,25 +183,16 @@ namespace Wazzy.IO
 
         public Type ReadValueType() => WASMType.GetValueType(ReadByte());
 
-        public List<WASMInstruction> ReadExpression() => ReadExpression(-1, null);
-        public List<WASMInstruction> ReadExpression(int byteReadLimit) => ReadExpression(byteReadLimit, null);
-        public List<WASMInstruction> ReadExpression(params OPCode[] additionalExitOperationCodes) => ReadExpression(-1, additionalExitOperationCodes);
-        public List<WASMInstruction> ReadExpression(int byteReadLimit, params OPCode[] additionalExitOperationCodes)
+        public List<WASMInstruction> ReadExpression(bool isBreakingOnElseInstruction = false)
         {
-            int startExpression = Position;
             var expression = new List<WASMInstruction>(3);
-            additionalExitOperationCodes ??= Array.Empty<OPCode>();
             while (Position < Length)
             {
                 var op = (OPCode)ReadByte();
                 var instruction = WASMInstruction.Create(ref this, op);
 
                 expression.Add(instruction);
-                if (byteReadLimit == -1) // Nested expression, return to upper level if marked as exit operation code.
-                {
-                    if (op == OPCode.End || additionalExitOperationCodes.Contains(op)) break; // Not sure I'm liking this .Contains call...
-                }
-                else if (Position - startExpression >= byteReadLimit) break; // Maximum bytes have been read from the highest scope/expression, exit regardless of operation exit code?
+                if (op == OPCode.End || (isBreakingOnElseInstruction && op == OPCode.Else)) break;
             }
             return expression;
         }
