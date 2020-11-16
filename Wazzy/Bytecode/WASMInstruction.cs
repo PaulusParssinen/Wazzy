@@ -205,6 +205,5 @@ namespace Wazzy.Bytecode
 
             _ => throw new NotImplementedException($"This instruction has not yet been implemented or does not exist in the specification. {op}(0x{(byte)op:X2})")
         };
-        public static WASMInstruction Create(ref WASMReader input) => Create(ref input, (OPCode)input.ReadByte());
     }
 }
