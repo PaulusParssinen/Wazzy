@@ -43,9 +43,9 @@ namespace Wazzy.Sections.Subsections
             }
 
             size += WASMReader.GetULEB128Size((uint)FunctionIndices.Count);
-            foreach (uint functionTypeIndex in FunctionIndices)
+            foreach (uint functionIndex in FunctionIndices)
             {
-                size += WASMReader.GetULEB128Size(functionTypeIndex);
+                size += WASMReader.GetULEB128Size(functionIndex);
             }
             return size;
         }
@@ -58,9 +58,9 @@ namespace Wazzy.Sections.Subsections
             }
 
             output.WriteULEB128((uint)FunctionIndices.Count);
-            foreach (uint functionTypeIndex in FunctionIndices)
+            foreach (uint functionIndex in FunctionIndices)
             {
-                output.WriteULEB128(functionTypeIndex);
+                output.WriteULEB128(functionIndex);
             }
         }
     }
