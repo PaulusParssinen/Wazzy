@@ -38,7 +38,7 @@ namespace Wazzy.Bytecode.Instructions.Control
                 FunctionTypeIndex = input.ReadIntLEB128();
             }
 
-            Expression = input.ReadExpression(OPCode.Else);
+            Expression = input.ReadExpression(true);
             if (Expression[^1].OP == OPCode.Else)
             {
                 ElseExpression = input.ReadExpression();
