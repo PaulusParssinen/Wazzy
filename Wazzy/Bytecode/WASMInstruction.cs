@@ -34,6 +34,25 @@ namespace Wazzy.Bytecode
         protected virtual void WriteBodyTo(ref WASMWriter output)
         { }
 
+        public override string ToString()
+        {
+            return OP.ToString();
+        }
+
+        public static IEnumerable<WASMInstruction> ConcatNestedExpressions(IEnumerable<WASMInstruction> instructions)
+        {
+            foreach (WASMInstruction outerInstruction in instructions)
+            {
+                yield return outerInstruction;
+                if (outerInstruction is IStructuredInstruction structuredInstruction)
+                {
+                    foreach (WASMInstruction innerInstruction in structuredInstruction)
+                    {
+                        yield return innerInstruction;
+                    }
+                }
+            }
+        }
         public static WASMInstruction Create(ref WASMReader input, OPCode op, IFunctionIndexAdjuster functionIndexAdjuster = null) => op switch
         {
             // Control
@@ -45,7 +64,7 @@ namespace Wazzy.Bytecode
             OPCode.Branch => new BranchIns(ref input),
             OPCode.BranchIf => new BranchIfIns(ref input),
             OPCode.BranchTable => new BranchTableIns(ref input),
-            OPCode.Else => new ElseIns(),
+            OPCode.Else => new ElseIns(ref input),
             OPCode.Return => new ReturnIns(),
             OPCode.Call => new CallIns(ref input, functionIndexAdjuster),
             OPCode.CallIndirect => new CallIndirectIns(ref input),

@@ -6,19 +6,28 @@ using Wazzy.Types;
 
 namespace Wazzy.Bytecode.Instructions.Control
 {
-    public class BlockIns : WASMInstruction
+    public class BlockIns : WASMInstruction, IStructuredInstruction
     {
+        protected ElseIns _else;
+
         public Type BlockType { get; set; }
         public int? FunctionTypeIndex { get; set; }
         public List<WASMInstruction> Expression { get; }
 
         public BlockIns()
-            : base(OPCode.Block)
+            : this(OPCode.Block)
+        { }
+        public BlockIns(ref WASMReader input)
+            : this(ref input, OPCode.Block)
+        { }
+
+        protected BlockIns(OPCode op)
+            : base(op)
         {
             Expression = new List<WASMInstruction>();
         }
-        public BlockIns(ref WASMReader input)
-            : base(OPCode.Block)
+        protected BlockIns(ref WASMReader input, OPCode op)
+            : base(op)
         {
             byte blockId = input.ReadByte();
             if (blockId == 0x40)
@@ -34,8 +43,15 @@ namespace Wazzy.Bytecode.Instructions.Control
                 input.Position--;
                 FunctionTypeIndex = input.ReadIntLEB128();
             }
-            Expression = input.ReadExpression();
+            Expression = input.ReadExpression(op == OPCode.If);
+            if (Expression[^1].OP == OPCode.Else)
+            {
+                _else = (ElseIns)Expression[^1];
+                Expression.RemoveAt(Expression.Count - 1);
+            }
         }
+
+        ElseIns IStructuredInstruction.GetElseInstruction() => _else;
 
         protected override int GetBodySize()
         {
@@ -50,6 +66,7 @@ namespace Wazzy.Bytecode.Instructions.Control
             {
                 size += instruction.GetSize();
             }
+            size += _else?.GetSize() ?? 0;
             return size;
         }
         protected override void WriteBodyTo(ref WASMWriter output)
@@ -67,6 +84,7 @@ namespace Wazzy.Bytecode.Instructions.Control
             {
                 instruction.WriteTo(ref output);
             }
+            _else?.WriteTo(ref output);
         }
     }
 }
