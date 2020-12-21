@@ -2,6 +2,7 @@
 
 namespace Wazzy.Sections.Subsections
 {
+    [System.Diagnostics.DebuggerDisplay("{Name,nq}")]
     public class ExportSubsection : WASMObject
     {
         private readonly IFunctionIndexAdjuster _functionIndexAdjuster;
