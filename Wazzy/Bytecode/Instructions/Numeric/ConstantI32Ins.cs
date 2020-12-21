@@ -17,7 +17,7 @@ namespace Wazzy.Bytecode.Instructions.Numeric
             Constant = constant;
         }
 
-        public override void Execute(Stack<object> stack, WASMModule context)
+        public override void Execute(Stack<object> stack, WASMModule context, params object[] parameters)
         {
             stack.Push(Constant);
         }

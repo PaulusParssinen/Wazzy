@@ -20,8 +20,7 @@ namespace Wazzy.Bytecode
         {
             Execute(stack, null);
         }
-        public virtual void Execute(Stack<object> stack, WASMModule context)
-        { }
+        public virtual void Execute(Stack<object> stack, WASMModule context, params object[] parameters) => throw new NotImplementedException();
 
         protected virtual int GetBodySize() => 0;
         public override int GetSize() => sizeof(OPCode) + GetBodySize();

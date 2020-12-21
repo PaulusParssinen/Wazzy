@@ -8,6 +8,6 @@ namespace Wazzy.Bytecode.Instructions.Numeric
             : base(OPCode.EqualZeroI32)
         { }
 
-        public override void Execute(Stack<object> stack, WASMModule context) => stack.Push((int)stack.Pop() == 0);
+        public override void Execute(Stack<object> stack, WASMModule context, params object[] parameters) => stack.Push((int)stack.Pop() == 0);
     }
 }

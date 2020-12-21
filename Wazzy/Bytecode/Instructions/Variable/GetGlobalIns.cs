@@ -17,7 +17,7 @@ namespace Wazzy.Bytecode.Instructions.Variable
             : this(input.ReadIntULEB128())
         { }
 
-        public override void Execute(Stack<object> stack, WASMModule context)
+        public override void Execute(Stack<object> stack, WASMModule context, params object[] parameters)
         {
             WASMMachine.Execute(context.GlobalSec[(int)Index].Expression, context, stack);
         }

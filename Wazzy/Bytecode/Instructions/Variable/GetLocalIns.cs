@@ -15,11 +15,7 @@ namespace Wazzy.Bytecode.Instructions.Variable
             : this(input.ReadIntULEB128())
         { }
 
-        protected override void WriteBodyTo(ref WASMWriter output)
-        {
-            output.WriteULEB128(Index);
-        }
-
         protected override int GetBodySize() => WASMReader.GetULEB128Size(Index);
+        protected override void WriteBodyTo(ref WASMWriter output) => output.WriteULEB128(Index);
     }
 }
