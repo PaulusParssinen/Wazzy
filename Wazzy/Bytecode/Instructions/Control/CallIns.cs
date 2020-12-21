@@ -21,7 +21,7 @@ namespace Wazzy.Bytecode.Instructions.Control
 
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteULEB128(FunctionIndex + _functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0);
+            output.WriteULEB128(FunctionIndex + (_functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0));
         }
         protected override int GetBodySize() => WASMReader.GetULEB128Size(FunctionIndex + _functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0);
     }
