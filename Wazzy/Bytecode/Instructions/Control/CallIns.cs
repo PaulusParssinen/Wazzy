@@ -23,6 +23,6 @@ namespace Wazzy.Bytecode.Instructions.Control
         {
             output.WriteULEB128(FunctionIndex + (_functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0));
         }
-        protected override int GetBodySize() => WASMReader.GetULEB128Size(FunctionIndex + _functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0);
+        protected override int GetBodySize() => WASMReader.GetULEB128Size(FunctionIndex + (_functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0));
     }
 }
