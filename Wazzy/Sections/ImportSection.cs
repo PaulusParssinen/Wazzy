@@ -35,14 +35,9 @@ namespace Wazzy.Sections
             Capacity = (int)input.ReadIntULEB128();
             for (int i = 0; i < Capacity; i++)
             {
-                var import = new ImportSubsection(ref input);
-                Add(import);
-
-                if (import.Description == ImpexDesc.Function)
-                {
-                    _originalLinearFunctionOffset++;
-                }
+                Add(new ImportSubsection(ref input));
             }
+            _originalLinearFunctionOffset = _functions.Count;
         }
 
         public uint Add(string module, string name, uint functionTypeIndex)
