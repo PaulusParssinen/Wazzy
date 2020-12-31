@@ -28,7 +28,7 @@ namespace Wazzy.Sections.Subsections
             }
 
             Bytecode = new byte[funcEnd - input.Position];
-            input.ReadBytes(Bytecode.AsSpan());
+            input.ReadBytes(Bytecode);
 
             if (funcEnd != input.Position)
             {
