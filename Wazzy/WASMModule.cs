@@ -10,7 +10,7 @@ using Wazzy.Sections;
 
 namespace Wazzy
 {
-    public class WASMModule : IEnumerable<WASMSection>, IFunctionIndexAdjuster
+    public class WASMModule : IEnumerable<WASMSection>
     {
         private const int HEADER_SIZE = 8;
         private const uint MAGIC_HEADER = 0x6D736100;
@@ -128,11 +128,9 @@ namespace Wazzy
         public bool Contains(WASMSectionId id) => _sections.ContainsKey(id);
         public bool TryGetSection(WASMSectionId id, out WASMSection section) => _sections.TryGetValue(id, out section);
 
-        public uint GetFunctionIndexOffset() => (uint)ImportSec.FreshlyImportedFunctions.Count;
-
         public void Disassemble()
         {
-            var input = new WASMReader(_data.Span.Slice(HEADER_SIZE), this);
+            var input = new WASMReader(_data.Span.Slice(HEADER_SIZE));
             while (input.IsDataAvailable)
             {
                 var id = (WASMSectionId)input.ReadByte();
@@ -182,10 +180,10 @@ namespace Wazzy
             WASMSectionId.TableSection => TableSec = new TableSection(ref input),
             WASMSectionId.MemorySection => MemorySec = new MemorySection(ref input),
             WASMSectionId.GlobalSection => GlobalSec = new GlobalSection(ref input),
-            WASMSectionId.ExportSection => ExportSec = new ExportSection(ref input, this),
+            WASMSectionId.ExportSection => ExportSec = new ExportSection(ref input, ImportSec),
             WASMSectionId.StartSection => StartSec = new StartSection(ref input),
-            WASMSectionId.ElementSection => ElementSec = new ElementSection(ref input, this),
-            WASMSectionId.CodeSection => CodeSec = new CodeSection(ref input),
+            WASMSectionId.ElementSection => ElementSec = new ElementSection(ref input, ImportSec),
+            WASMSectionId.CodeSection => CodeSec = new CodeSection(ref input, ImportSec),
             WASMSectionId.DataSection => DataSec = new DataSection(ref input),
 
             _ => throw new Exception($"Unable to determine section type. {id}(0x{id:X})")

@@ -15,7 +15,6 @@ namespace Wazzy.CLI
 
             var disassembleTime = Stopwatch.StartNew();
             originalModule.Disassemble();
-            disassembleTime.Stop();
 
             string assembledPath = args[0].Replace("original_", string.Empty);
             using var fs = File.Create(assembledPath);
@@ -38,7 +37,7 @@ namespace Wazzy.CLI
                 string originalChunkHex = BitConverter.ToString(originalModuleData, i, 10);
                 string modifiedChunkHex = BitConverter.ToString(assembledModuleData, i, 10);
                 areModulesEqual = false;
-                System.Diagnostics.Debugger.Break();
+                Debugger.Break();
             }
             Console.WriteLine("Are Modules Equal: " + areModulesEqual);
             Console.ReadLine();

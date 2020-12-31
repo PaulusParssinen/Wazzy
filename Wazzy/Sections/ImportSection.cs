@@ -1,24 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Wazzy.IO;
 using Wazzy.Sections.Subsections;
 
 namespace Wazzy.Sections
 {
-    public class ImportSection : WASMSectionEnumerable<ImportSubsection>
+    public class ImportSection : WASMSectionEnumerable<ImportSubsection>, IFunctionOffsetProvider
     {
-        private readonly List<ImportSubsection> _functionImports;
-        private readonly List<ImportSubsection> _freshlyImportedFunctions;
+        private readonly int _originalLinearFunctionOffset;
+        private readonly Dictionary<ImpexDesc, IReadOnlyList<ImportSubsection>> _imports;
+        private readonly List<ImportSubsection> _functions, _tables, _memories, _globals;
 
-        public IReadOnlyList<ImportSubsection> FreshlyImportedFunctions { get; }
+        public int FunctionOffset => _functions.Count - _originalLinearFunctionOffset;
 
         public ImportSection()
             : base(WASMSectionId.ImportSection)
         {
-            _functionImports = new List<ImportSubsection>();
-            _freshlyImportedFunctions = new List<ImportSubsection>();
-
-            FreshlyImportedFunctions = _freshlyImportedFunctions.AsReadOnly();
+            _tables = new List<ImportSubsection>();
+            _globals = new List<ImportSubsection>();
+            _memories = new List<ImportSubsection>();
+            _functions = new List<ImportSubsection>();
+            _imports = new Dictionary<ImpexDesc, IReadOnlyList<ImportSubsection>>
+            {
+                [ImpexDesc.Function] = _functions.AsReadOnly(),
+                [ImpexDesc.Table] = _tables.AsReadOnly(),
+                [ImpexDesc.Memory] = _memories.AsReadOnly(),
+                [ImpexDesc.Global] = _globals.AsReadOnly()
+            };
         }
         public ImportSection(ref WASMReader input)
             : this()
@@ -26,44 +35,53 @@ namespace Wazzy.Sections
             Capacity = (int)input.ReadIntULEB128();
             for (int i = 0; i < Capacity; i++)
             {
-                Add(new ImportSubsection(ref input));
+                var import = new ImportSubsection(ref input);
+                Add(import);
+
+                if (import.Description == ImpexDesc.Function)
+                {
+                    _originalLinearFunctionOffset++;
+                }
             }
         }
 
         public uint Add(string module, string name, uint functionTypeIndex)
         {
-            int functionImportIndex = FreshlyImportedFunctions.Count;
-            var freshFunctionImport = new ImportSubsection(module, name, functionTypeIndex);
-
-            _freshlyImportedFunctions.Add(freshFunctionImport);
-            Insert(IndexOf(_functionImports[0]) + functionImportIndex, freshFunctionImport);
+            int functionImportIndex = FunctionOffset;
+            Insert(IndexOf(_functions[0]) + functionImportIndex, new ImportSubsection(module, name, functionTypeIndex));
 
             return (uint)functionImportIndex;
         }
+        public IReadOnlyList<ImportSubsection> Choose(ImpexDesc description) => _imports[description];
 
         protected override void Cleared()
         {
-            _functionImports.Clear();
+            _tables.Clear();
+            _globals.Clear();
+            _memories.Clear();
+            _functions.Clear();
         }
         protected override void Added(int index, ImportSubsection subsection)
         {
-            if (subsection.Description != ImpexDesc.Function) return;
-            if (!_freshlyImportedFunctions.Contains(subsection))
+            (subsection.Description switch
             {
-                _functionImports.Add(subsection);
-            }
-            else _functionImports.Insert(_freshlyImportedFunctions.Count - 1, subsection);
+                ImpexDesc.Table => _tables,
+                ImpexDesc.Global => _globals,
+                ImpexDesc.Memory => _memories,
+                ImpexDesc.Function => _functions,
+                _ => throw new ArgumentException(null, nameof(subsection))
+            }).Add(subsection);
         }
         protected override void Removed(int index, ImportSubsection subsection)
         {
-            if (subsection.Description == ImpexDesc.Function)
+            (subsection.Description switch
             {
-                _functionImports.Remove(subsection);
-                if (_freshlyImportedFunctions.Contains(subsection))
-                {
-                    _freshlyImportedFunctions.Remove(subsection);
-                }
-            }
+                ImpexDesc.Table => _tables,
+                ImpexDesc.Global => _globals,
+                ImpexDesc.Memory => _memories,
+                ImpexDesc.Function => _functions,
+                _ => throw new ArgumentException(null, nameof(subsection))
+            }).Remove(subsection);
         }
 
         protected override int GetBodySize()

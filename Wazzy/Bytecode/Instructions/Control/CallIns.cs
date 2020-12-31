@@ -4,7 +4,7 @@ namespace Wazzy.Bytecode.Instructions.Control
 {
     public class CallIns : WASMInstruction
     {
-        private readonly IFunctionIndexAdjuster _functionIndexAdjuster;
+        private readonly IFunctionOffsetProvider _functionOffsetProvider;
 
         public uint FunctionIndex { get; set; }
 
@@ -13,16 +13,16 @@ namespace Wazzy.Bytecode.Instructions.Control
         {
             FunctionIndex = functionIndex;
         }
-        public CallIns(ref WASMReader input, IFunctionIndexAdjuster functionIndexAdjuster = null)
+        public CallIns(ref WASMReader input, IFunctionOffsetProvider functionOffsetProvider = null)
             : this(input.ReadIntULEB128())
         {
-            _functionIndexAdjuster = functionIndexAdjuster;
+            _functionOffsetProvider = functionOffsetProvider;
         }
 
         protected override void WriteBodyTo(ref WASMWriter output)
         {
-            output.WriteULEB128(FunctionIndex + (_functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0));
+            output.WriteULEB128(FunctionIndex + (uint)(_functionOffsetProvider?.FunctionOffset ?? 0));
         }
-        protected override int GetBodySize() => WASMReader.GetULEB128Size(FunctionIndex + (_functionIndexAdjuster?.GetFunctionIndexOffset() ?? 0));
+        protected override int GetBodySize() => WASMReader.GetULEB128Size(FunctionIndex + (uint)(_functionOffsetProvider?.FunctionOffset ?? 0));
     }
 }

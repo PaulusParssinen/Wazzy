@@ -38,6 +38,22 @@ namespace Wazzy.Bytecode
             return OP.ToString();
         }
 
+        public static byte[] ToArray(IEnumerable<WASMInstruction> instructions)
+        {
+            int size = 0;
+            foreach (WASMInstruction instruction in instructions)
+            {
+                size += instruction.GetSize();
+            }
+
+            var bytecode = new byte[size];
+            var output = new WASMWriter(bytecode);
+            foreach (WASMInstruction instruction in instructions)
+            {
+                instruction.WriteTo(ref output);
+            }
+            return bytecode;
+        }
         public static IEnumerable<WASMInstruction> ConcatNestedExpressions(IEnumerable<WASMInstruction> instructions)
         {
             foreach (WASMInstruction outerInstruction in instructions)
@@ -52,7 +68,7 @@ namespace Wazzy.Bytecode
                 }
             }
         }
-        public static WASMInstruction Create(ref WASMReader input, OPCode op, IFunctionIndexAdjuster functionIndexAdjuster = null) => op switch
+        public static WASMInstruction Create(ref WASMReader input, OPCode op, IFunctionOffsetProvider functionOffsetProvider = null) => op switch
         {
             // Control
             OPCode.Unreachable => new UnreachableIns(),
@@ -65,7 +81,7 @@ namespace Wazzy.Bytecode
             OPCode.BranchTable => new BranchTableIns(ref input),
             OPCode.Else => new ElseIns(ref input),
             OPCode.Return => new ReturnIns(),
-            OPCode.Call => new CallIns(ref input, functionIndexAdjuster),
+            OPCode.Call => new CallIns(ref input, functionOffsetProvider),
             OPCode.CallIndirect => new CallIndirectIns(ref input),
             OPCode.End => new EndIns(),
 

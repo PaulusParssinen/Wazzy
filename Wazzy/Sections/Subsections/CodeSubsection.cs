@@ -9,11 +9,15 @@ namespace Wazzy.Sections.Subsections
 {
     public class CodeSubsection : WASMObject
     {
-        public List<Local> Locals { get; }
-        public List<WASMInstruction> Expression { get; }
+        private readonly IFunctionOffsetProvider _functionOffsetProvider;
 
-        public CodeSubsection(ref WASMReader input)
+        public List<Local> Locals { get; }
+        public byte[] Bytecode { get; set; }
+
+        public CodeSubsection(ref WASMReader input, IFunctionOffsetProvider functionOffsetProvider)
         {
+            _functionOffsetProvider = functionOffsetProvider;
+
             int funcSize = (int)input.ReadIntULEB128();
             int funcEnd = input.Position + funcSize;
 
@@ -22,12 +26,17 @@ namespace Wazzy.Sections.Subsections
             {
                 Locals.Add(new Local(ref input));
             }
-            Expression = input.ReadExpression();
+
+            Bytecode = new byte[funcEnd - input.Position];
+            input.ReadBytes(Bytecode.AsSpan());
+
             if (funcEnd != input.Position)
             {
                 throw new Exception("Malformed subsection, since the expected ending position did not match the actual ending position.");
             }
         }
+
+        public List<WASMInstruction> Parse() => new WASMReader(Bytecode).ReadExpression(_functionOffsetProvider);
 
         public override int GetSize()
         {
@@ -37,13 +46,7 @@ namespace Wazzy.Sections.Subsections
             {
                 size += local.GetSize();
             }
-
-            foreach (WASMInstruction instruction in Expression)
-            {
-                size += instruction.GetSize();
-            }
-
-            // Finally calculate the real size
+            size += Bytecode.Length;
             size += WASMReader.GetULEB128Size((uint)size);
             return size;
         }
@@ -55,11 +58,7 @@ namespace Wazzy.Sections.Subsections
             {
                 funcSize += local.GetSize();
             }
-
-            foreach (WASMInstruction instruction in Expression)
-            {
-                funcSize += instruction.GetSize();
-            }
+            funcSize += Bytecode.Length;
 
             output.WriteULEB128((uint)funcSize);
             output.WriteULEB128((uint)Locals.Count);
@@ -67,11 +66,7 @@ namespace Wazzy.Sections.Subsections
             {
                 local.WriteTo(ref output);
             }
-
-            foreach (WASMInstruction instruction in Expression)
-            {
-                instruction.WriteTo(ref output);
-            }
+            output.Write(Bytecode);
         }
     }
 }

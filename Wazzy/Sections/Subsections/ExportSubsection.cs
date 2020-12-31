@@ -5,15 +5,15 @@ namespace Wazzy.Sections.Subsections
     [System.Diagnostics.DebuggerDisplay("{Name,nq}")]
     public class ExportSubsection : WASMObject
     {
-        private readonly IFunctionIndexAdjuster _functionIndexAdjuster;
+        private readonly IFunctionOffsetProvider _functionOffsetProvider;
 
         public uint Index { get; }
         public string Name { get; set; }
         public ImpexDesc Description { get; set; }
 
-        public ExportSubsection(ref WASMReader input, IFunctionIndexAdjuster functionIndexAdjuster = null)
+        public ExportSubsection(ref WASMReader input, IFunctionOffsetProvider functionOffsetProvider = null)
         {
-            _functionIndexAdjuster = functionIndexAdjuster ?? default;
+            _functionOffsetProvider = functionOffsetProvider;
 
             Name = input.ReadString();
             Description = (ImpexDesc)input.ReadByte();
@@ -25,14 +25,14 @@ namespace Wazzy.Sections.Subsections
             int size = 0;
             size += WASMReader.GetULEB128Size(Name);
             size += sizeof(byte);
-            size += WASMReader.GetULEB128Size(Index + (_functionIndexAdjuster?.GetFunctionIndexOffset(Description) ?? 0));
+            size += WASMReader.GetULEB128Size(Index + (uint)(Description == ImpexDesc.Function ? (_functionOffsetProvider?.FunctionOffset ?? 0) : 0));
             return size;
         }
         public override void WriteTo(ref WASMWriter output)
         {
             output.WriteString(Name);
             output.Write((byte)Description);
-            output.WriteULEB128(Index + (_functionIndexAdjuster?.GetFunctionIndexOffset(Description) ?? 0));
+            output.WriteULEB128(Index + (uint)(Description == ImpexDesc.Function ? (_functionOffsetProvider?.FunctionOffset ?? 0) : 0));
         }
     }
 }

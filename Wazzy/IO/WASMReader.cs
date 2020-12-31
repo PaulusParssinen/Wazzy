@@ -13,17 +13,15 @@ namespace Wazzy.IO
     public ref struct WASMReader
     {
         private readonly ReadOnlySpan<byte> _data;
-        private readonly IFunctionIndexAdjuster _functionIndexAdjuster;
 
         public int Position { get; set; }
 
         public readonly int Length => _data.Length;
         public readonly bool IsDataAvailable => Position < _data.Length;
 
-        public WASMReader(ReadOnlySpan<byte> data, IFunctionIndexAdjuster functionIndexAdjuster = null)
+        public WASMReader(ReadOnlySpan<byte> data)
         {
             _data = data;
-            _functionIndexAdjuster = functionIndexAdjuster;
 
             Position = 0;
         }
@@ -186,18 +184,19 @@ namespace Wazzy.IO
 
         public Type ReadValueType() => WASMType.GetValueType(ReadByte());
 
-        public List<WASMInstruction> ReadExpression(bool isBreakingOnElseInstruction = false)
+        public List<WASMInstruction> ReadExpression(IFunctionOffsetProvider functionOffsetProvider, bool isBreakingOnElseInstruction = false)
         {
             var expression = new List<WASMInstruction>(3);
             while (Position < Length)
             {
                 var op = (OPCode)ReadByte();
-                var instruction = WASMInstruction.Create(ref this, op, _functionIndexAdjuster);
+                var instruction = WASMInstruction.Create(ref this, op, functionOffsetProvider);
 
                 expression.Add(instruction);
                 if (op == OPCode.End || (isBreakingOnElseInstruction && op == OPCode.Else)) break;
             }
             return expression;
         }
+        public List<WASMInstruction> ReadExpression(bool isBreakingOnElseInstruction = false) => ReadExpression(null, isBreakingOnElseInstruction);
     }
 }
