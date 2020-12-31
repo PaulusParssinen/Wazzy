@@ -15,10 +15,11 @@ namespace Wazzy.CLI
 
             var disassembleTime = Stopwatch.StartNew();
             originalModule.Disassemble();
+            disassembleTime.Stop();
 
             string assembledPath = args[0].Replace("original_", string.Empty);
             using var fs = File.Create(assembledPath);
-             var writer = PipeWriter.Create(fs);
+            var writer = PipeWriter.Create(fs);
 
             var assembleTime = Stopwatch.StartNew();
             originalModule.Assemble(writer);
