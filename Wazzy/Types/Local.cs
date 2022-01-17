@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 using Wazzy.IO;
 
 namespace Wazzy.Types

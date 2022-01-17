@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-
+﻿
 using Wazzy.IO;
 using Wazzy.Bytecode;
 using Wazzy.Bytecode.Instructions.Control;

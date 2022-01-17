@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-
+﻿
 using Wazzy.IO;
 
 namespace Wazzy.Bytecode.Instructions.Variable

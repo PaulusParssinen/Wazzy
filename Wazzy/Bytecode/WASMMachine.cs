@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Wazzy.Bytecode
+﻿namespace Wazzy.Bytecode
 {
     public class WASMMachine
     {

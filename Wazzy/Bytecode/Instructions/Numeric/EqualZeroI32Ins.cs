@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric
 {
     public class EqualZeroI32Ins : WASMInstruction
     {
