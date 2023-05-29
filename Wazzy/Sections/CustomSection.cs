@@ -4,7 +4,7 @@ using Wazzy.IO;
 
 namespace Wazzy.Sections;
 
-public class CustomSection : WASMSection
+public sealed class CustomSection : WASMSection
 {
     public string Name { get; set; }
     public byte[] Package { get; set; }

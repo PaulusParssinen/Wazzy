@@ -6,7 +6,7 @@ using Wazzy.Types;
 namespace Wazzy.Sections.Subsections;
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class ImportSubsection : WASMObject
+public sealed class ImportSubsection : WASMObject
 {
     public string Name { get; set; }
     public object Value { get; set; }

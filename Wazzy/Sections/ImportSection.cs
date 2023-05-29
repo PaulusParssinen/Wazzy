@@ -3,7 +3,7 @@ using Wazzy.Sections.Subsections;
 
 namespace Wazzy.Sections;
 
-public class ImportSection : WASMSectionEnumerable<ImportSubsection>, IFunctionOffsetProvider
+public sealed class ImportSection : WASMSectionEnumerable<ImportSubsection>, IFunctionOffsetProvider
 {
     private readonly int _originalLinearFunctionOffset;
     private readonly Dictionary<ImpexDesc, IReadOnlyList<ImportSubsection>> _imports;

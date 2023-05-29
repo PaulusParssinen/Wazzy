@@ -2,7 +2,7 @@
 
 namespace Wazzy.Sections;
 
-public class FunctionSection : WASMSectionEnumerable<uint>
+public sealed class FunctionSection : WASMSectionEnumerable<uint>
 {
     public FunctionSection(ref WASMReader input)
         : base(WASMSectionId.FunctionSection)

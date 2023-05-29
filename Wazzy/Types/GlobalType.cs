@@ -2,7 +2,7 @@
 
 namespace Wazzy.Types;
 
-public class GlobalType : WASMType
+public sealed class GlobalType : WASMType
 {
     public Type ValueType { get; set; }
     public bool IsMutable { get; set; }

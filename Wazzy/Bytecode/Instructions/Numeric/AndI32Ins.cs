@@ -1,6 +1,6 @@
 ﻿namespace Wazzy.Bytecode.Instructions.Numeric;
 
-public class AndI32Ins : WASMInstruction
+public sealed class AndI32Ins : WASMInstruction
 {
     public AndI32Ins()
         : base(OPCode.AndI32)

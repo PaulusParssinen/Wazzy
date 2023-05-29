@@ -3,7 +3,7 @@ using Wazzy.Sections.Subsections;
 
 namespace Wazzy.Sections;
 
-public class GlobalSection : WASMSectionEnumerable<GlobalSubsection>
+public sealed class GlobalSection : WASMSectionEnumerable<GlobalSubsection>
 {
     public GlobalSection(ref WASMReader input)
         : base(WASMSectionId.GlobalSection)

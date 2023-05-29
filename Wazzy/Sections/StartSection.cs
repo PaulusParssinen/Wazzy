@@ -2,7 +2,7 @@
 
 namespace Wazzy.Sections;
 
-public class StartSection : WASMSection
+public sealed class StartSection : WASMSection
 {
     public uint FunctionIndex { get; set; }
 

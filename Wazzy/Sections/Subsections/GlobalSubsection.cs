@@ -4,7 +4,7 @@ using Wazzy.Bytecode;
 
 namespace Wazzy.Sections.Subsections;
 
-public class GlobalSubsection : WASMObject
+public sealed class GlobalSubsection : WASMObject
 {
     public GlobalType Info { get; set; }
     public List<WASMInstruction> Expression { get; set; }

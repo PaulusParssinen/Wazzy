@@ -3,7 +3,7 @@ using Wazzy.Types;
 
 namespace Wazzy.Sections;
 
-public class TableSection : WASMSectionEnumerable<TableType>
+public sealed class TableSection : WASMSectionEnumerable<TableType>
 {
     public TableSection(ref WASMReader input)
         : base(WASMSectionId.TableSection)

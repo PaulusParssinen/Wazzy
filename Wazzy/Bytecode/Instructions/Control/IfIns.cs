@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Control;
 
-public class IfIns : BlockIns
+public sealed class IfIns : BlockIns
 {
     public ElseIns Else
     {

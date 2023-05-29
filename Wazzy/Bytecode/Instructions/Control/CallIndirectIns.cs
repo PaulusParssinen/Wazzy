@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Control;
 
-public class CallIndirectIns : WASMInstruction
+public sealed class CallIndirectIns : WASMInstruction
 {
     public uint TypeIndex { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Memory;
 
-public class LoadF32Ins : MemoryInstruction
+public sealed class LoadF32Ins : MemoryInstruction
 {
     public LoadF32Ins()
         : base(OPCode.LoadF32, true)

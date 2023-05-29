@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Memory;
 
-public class StoreI64Ins : MemoryInstruction
+public sealed class StoreI64Ins : MemoryInstruction
 {
     public StoreI64Ins()
         : base(OPCode.StoreI64, true)

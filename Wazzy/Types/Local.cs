@@ -2,7 +2,7 @@
 
 namespace Wazzy.Types;
 
-public class Local : WASMType
+public sealed class Local : WASMType
 {
     public uint Rank { get; set; }
     public Type Type { get; set; }

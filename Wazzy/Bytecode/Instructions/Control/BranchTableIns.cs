@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Control;
 
-public class BranchTableIns : WASMInstruction
+public sealed class BranchTableIns : WASMInstruction
 {
     public uint LabelIndex { get; set; }
     public List<uint> LabelIndices { get; }

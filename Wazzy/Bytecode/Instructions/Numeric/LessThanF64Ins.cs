@@ -1,6 +1,6 @@
 ﻿namespace Wazzy.Bytecode.Instructions.Numeric;
 
-public class LessThanF64Ins : WASMInstruction
+public sealed class LessThanF64Ins : WASMInstruction
 {
     public LessThanF64Ins()
         : base(OPCode.LessThanF64)

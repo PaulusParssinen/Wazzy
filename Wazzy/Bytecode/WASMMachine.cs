@@ -1,6 +1,6 @@
 ﻿namespace Wazzy.Bytecode;
 
-public class WASMMachine
+public sealed class WASMMachine
 {
     private readonly WASMModule _context;
 

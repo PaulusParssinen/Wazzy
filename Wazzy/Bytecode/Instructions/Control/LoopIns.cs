@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Control;
 
-public class LoopIns : BlockIns
+public sealed class LoopIns : BlockIns
 {
     public LoopIns()
         : base(OPCode.Loop)

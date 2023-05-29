@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Control;
 
-public class CallIns : WASMInstruction
+public sealed class CallIns : WASMInstruction
 {
     private readonly IFunctionOffsetProvider _functionOffsetProvider;
 

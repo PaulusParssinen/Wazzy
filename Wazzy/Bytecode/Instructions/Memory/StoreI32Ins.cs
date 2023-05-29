@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Memory;
 
-public class StoreI32Ins : MemoryInstruction
+public sealed class StoreI32Ins : MemoryInstruction
 {
     public StoreI32Ins(ref WASMReader input)
         : base(OPCode.StoreI32, ref input, true)

@@ -1,6 +1,6 @@
 ﻿namespace Wazzy.Bytecode.Instructions.Numeric;
 
-public class AddI32Ins : WASMInstruction
+public sealed class AddI32Ins : WASMInstruction
 {
     public AddI32Ins()
         : base(OPCode.AddI32)

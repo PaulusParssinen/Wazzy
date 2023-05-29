@@ -1,6 +1,6 @@
 ﻿namespace Wazzy.Bytecode.Instructions.Numeric;
 
-public class EqualZeroI32Ins : WASMInstruction
+public sealed class EqualZeroI32Ins : WASMInstruction
 {
     public EqualZeroI32Ins()
         : base(OPCode.EqualZeroI32)

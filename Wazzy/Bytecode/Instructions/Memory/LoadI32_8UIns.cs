@@ -3,7 +3,7 @@ using Wazzy.IO;
 
 namespace Wazzy.Bytecode.Instructions.Memory;
 
-public class LoadI32_8UIns : MemoryInstruction
+public sealed class LoadI32_8UIns : MemoryInstruction
 {
     public LoadI32_8UIns()
         : base(OPCode.LoadI32_8U, true)

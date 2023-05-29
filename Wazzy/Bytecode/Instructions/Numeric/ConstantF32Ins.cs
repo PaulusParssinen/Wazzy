@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Numeric;
 
-public class ConstantF32Ins : WASMInstruction
+public sealed class ConstantF32Ins : WASMInstruction
 {
     public float Constant { get; set; }
 

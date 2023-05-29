@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Control;
 
-public class ElseIns : WASMInstruction, IStructuredInstruction
+public sealed class ElseIns : WASMInstruction, IStructuredInstruction
 {
     public List<WASMInstruction> Expression { get; set; }
 

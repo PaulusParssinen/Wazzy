@@ -6,7 +6,7 @@ namespace Wazzy.Sections;
 /// <summary>
 /// Represents a list of function signatures.
 /// </summary>
-public class TypeSection : WASMSectionEnumerable<FuncType>
+public sealed class TypeSection : WASMSectionEnumerable<FuncType>
 {
     private readonly SortedDictionary<int, IList<FuncType>> _functionTypesByParameterCount;
 

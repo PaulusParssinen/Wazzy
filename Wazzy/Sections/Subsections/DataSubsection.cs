@@ -5,7 +5,7 @@ using Wazzy.Bytecode.Instructions.Numeric;
 
 namespace Wazzy.Sections.Subsections;
 
-public class DataSubsection : WASMObject
+public sealed class DataSubsection : WASMObject
 {
     public uint MemoryIndex { get; }
     public byte[] Package { get; set; }

@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Memory;
 
-public class LoadF64Ins : MemoryInstruction
+public sealed class LoadF64Ins : MemoryInstruction
 {
     public LoadF64Ins()
         : base(OPCode.LoadF64, true)

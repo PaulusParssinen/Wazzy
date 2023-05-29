@@ -4,7 +4,7 @@ using Wazzy.Bytecode;
 
 namespace Wazzy.Sections.Subsections;
 
-public class CodeSubsection : WASMObject
+public sealed class CodeSubsection : WASMObject
 {
     private readonly IFunctionOffsetProvider _functionOffsetProvider;
 

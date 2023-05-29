@@ -3,7 +3,7 @@
 namespace Wazzy.Sections.Subsections;
 
 [System.Diagnostics.DebuggerDisplay("{Name,nq}")]
-public class ExportSubsection : WASMObject
+public sealed class ExportSubsection : WASMObject
 {
     private readonly IFunctionOffsetProvider _functionOffsetProvider;
 

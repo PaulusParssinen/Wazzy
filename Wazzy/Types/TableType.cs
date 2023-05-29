@@ -2,7 +2,7 @@
 
 namespace Wazzy.Types;
 
-public class TableType : WASMType
+public sealed class TableType : WASMType
 {
     public byte ElementType { get; set; }
     public Limits Limits { get; set; }

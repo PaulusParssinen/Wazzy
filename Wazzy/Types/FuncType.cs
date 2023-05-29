@@ -5,7 +5,7 @@ using Wazzy.IO;
 namespace Wazzy.Types;
 
 [DebuggerDisplay("{DebuggerDisplay,nq}")]
-public class FuncType : WASMType
+public sealed class FuncType : WASMType
 {
     internal string DebuggerDisplay
     {

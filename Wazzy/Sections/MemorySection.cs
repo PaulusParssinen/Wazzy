@@ -3,7 +3,7 @@ using Wazzy.Types;
 
 namespace Wazzy.Sections;
 
-public class MemorySection : WASMSectionEnumerable<MemoryType>
+public sealed class MemorySection : WASMSectionEnumerable<MemoryType>
 {
     public MemorySection(ref WASMReader input)
         : base(WASMSectionId.MemorySection)

@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Variable;
 
-public class SetGlobalIns : WASMInstruction
+public sealed class SetGlobalIns : WASMInstruction
 {
     public uint Index { get; set; }
 

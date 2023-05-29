@@ -2,7 +2,7 @@
 
 namespace Wazzy.Bytecode.Instructions.Memory;
 
-public class MemorySizeIns : MemoryInstruction
+public sealed class MemorySizeIns : MemoryInstruction
 {
     public byte Index { get; set; }
 

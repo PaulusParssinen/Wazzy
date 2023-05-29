@@ -3,7 +3,7 @@ using Wazzy.Sections.Subsections;
 
 namespace Wazzy.Sections;
 
-public class ElementSection : WASMSectionEnumerable<ElementSubsection>
+public sealed class ElementSection : WASMSectionEnumerable<ElementSubsection>
 {
     public ElementSection(ref WASMReader input, IFunctionOffsetProvider functionOffsetProvider = null)
         : base(WASMSectionId.ElementSection)
