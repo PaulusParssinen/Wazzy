@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Control
+﻿namespace Wazzy.Bytecode.Instructions.Control;
+
+public class ReturnIns : WASMInstruction
 {
-    public class ReturnIns : WASMInstruction
-    {
-        public ReturnIns()
-            : base(OPCode.Return)
-        { }
-    }
+    public ReturnIns()
+        : base(OPCode.Return)
+    { }
 }

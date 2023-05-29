@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class FloorF32Ins : WASMInstruction
 {
-    public class FloorF32Ins : WASMInstruction
-    {
-        public FloorF32Ins()
-            : base(OPCode.FloorF32)
-        { }
-    }
+    public FloorF32Ins()
+        : base(OPCode.FloorF32)
+    { }
 }

@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class RotateLeftI64Ins : WASMInstruction
 {
-    public class RotateLeftI64Ins : WASMInstruction
-    {
-        public RotateLeftI64Ins()
-            : base(OPCode.RotateLeftI64)
-        { }
-    }
+    public RotateLeftI64Ins()
+        : base(OPCode.RotateLeftI64)
+    { }
 }

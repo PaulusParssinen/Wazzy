@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class ConvertI64IntoF64_UIns : WASMInstruction
 {
-    public class ConvertI64IntoF64_UIns : WASMInstruction
-    {
-        public ConvertI64IntoF64_UIns()
-            : base(OPCode.ConvertI64IntoF64_U)
-        { }
-    }
+    public ConvertI64IntoF64_UIns()
+        : base(OPCode.ConvertI64IntoF64_U)
+    { }
 }

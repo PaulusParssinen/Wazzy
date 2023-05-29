@@ -1,49 +1,47 @@
-﻿
-using Wazzy.IO;
+﻿using Wazzy.IO;
 
-namespace Wazzy.Bytecode.Instructions.Control
+namespace Wazzy.Bytecode.Instructions.Control;
+
+public class BranchTableIns : WASMInstruction
 {
-    public class BranchTableIns : WASMInstruction
+    public uint LabelIndex { get; set; }
+    public List<uint> LabelIndices { get; }
+
+    public BranchTableIns()
+        : base(OPCode.BranchTable)
     {
-        public uint LabelIndex { get; set; }
-        public List<uint> LabelIndices { get; }
+        LabelIndices = new List<uint>();
+    }
+    public BranchTableIns(ref WASMReader input)
+        : this()
+    {
+        LabelIndices.Capacity = (int)input.ReadIntULEB128();
+        for (int i = 0; i < LabelIndices.Capacity; i++)
+        {
+            LabelIndices.Add(input.ReadIntULEB128());
+        }
+        LabelIndex = input.ReadIntULEB128();
+    }
 
-        public BranchTableIns()
-            : base(OPCode.BranchTable)
+    protected override void WriteBodyTo(ref WASMWriter output)
+    {
+        output.WriteULEB128((uint)LabelIndices.Count);
+        foreach (uint labelIndex in LabelIndices)
         {
-            LabelIndices = new List<uint>();
+            output.WriteULEB128(labelIndex);
         }
-        public BranchTableIns(ref WASMReader input)
-            : this()
-        {
-            LabelIndices.Capacity = (int)input.ReadIntULEB128();
-            for (int i = 0; i < LabelIndices.Capacity; i++)
-            {
-                LabelIndices.Add(input.ReadIntULEB128());
-            }
-            LabelIndex = input.ReadIntULEB128();
-        }
+        output.WriteULEB128(LabelIndex);
+    }
 
-        protected override void WriteBodyTo(ref WASMWriter output)
+    protected override int GetBodySize()
+    {
+        int size = 0;
+        size += WASMReader.GetULEB128Size((uint)LabelIndices.Count);
+        foreach (uint labelIndex in LabelIndices)
         {
-            output.WriteULEB128((uint)LabelIndices.Count);
-            foreach (uint labelIndex in LabelIndices)
-            {
-                output.WriteULEB128(labelIndex);
-            }
-            output.WriteULEB128(LabelIndex);
+            size += WASMReader.GetULEB128Size(labelIndex);
         }
-
-        protected override int GetBodySize()
-        {
-            int size = 0;
-            size += WASMReader.GetULEB128Size((uint)LabelIndices.Count);
-            foreach (uint labelIndex in LabelIndices)
-            {
-                size += WASMReader.GetULEB128Size(labelIndex);
-            }
-            size += WASMReader.GetULEB128Size(LabelIndex);
-            return size;
-        }
+        size += WASMReader.GetULEB128Size(LabelIndex);
+        return size;
     }
 }

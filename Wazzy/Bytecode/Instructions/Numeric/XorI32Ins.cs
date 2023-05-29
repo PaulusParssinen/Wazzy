@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class XorI32Ins : WASMInstruction
 {
-    public class XorI32Ins : WASMInstruction
-    {
-        public XorI32Ins()
-            : base(OPCode.XorI32)
-        { }
-    }
+    public XorI32Ins()
+        : base(OPCode.XorI32)
+    { }
 }

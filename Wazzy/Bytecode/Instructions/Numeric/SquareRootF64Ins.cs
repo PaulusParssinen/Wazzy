@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class SquareRootF64Ins : WASMInstruction
 {
-    public class SquareRootF64Ins : WASMInstruction
-    {
-        public SquareRootF64Ins()
-            : base(OPCode.SquareRootF64)
-        { }
-    }
+    public SquareRootF64Ins()
+        : base(OPCode.SquareRootF64)
+    { }
 }

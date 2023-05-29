@@ -1,21 +1,20 @@
 ﻿using Wazzy.IO;
 
-namespace Wazzy.Bytecode.Instructions.Variable
+namespace Wazzy.Bytecode.Instructions.Variable;
+
+public class GetLocalIns : WASMInstruction
 {
-    public class GetLocalIns : WASMInstruction
+    public uint Index { get; set; }
+
+    public GetLocalIns(uint index = 0)
+        : base(OPCode.GetLocal)
     {
-        public uint Index { get; set; }
-
-        public GetLocalIns(uint index = 0)
-            : base(OPCode.GetLocal)
-        {
-            Index = index;
-        }
-        public GetLocalIns(ref WASMReader input)
-            : this(input.ReadIntULEB128())
-        { }
-
-        protected override int GetBodySize() => WASMReader.GetULEB128Size(Index);
-        protected override void WriteBodyTo(ref WASMWriter output) => output.WriteULEB128(Index);
+        Index = index;
     }
+    public GetLocalIns(ref WASMReader input)
+        : this(input.ReadIntULEB128())
+    { }
+
+    protected override int GetBodySize() => WASMReader.GetULEB128Size(Index);
+    protected override void WriteBodyTo(ref WASMWriter output) => output.WriteULEB128(Index);
 }

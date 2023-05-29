@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class LessThanI64_UIns : WASMInstruction
 {
-    public class LessThanI64_UIns : WASMInstruction
-    {
-        public LessThanI64_UIns()
-            : base(OPCode.LessThanI64_U)
-        { }
-    }
+    public LessThanI64_UIns()
+        : base(OPCode.LessThanI64_U)
+    { }
 }

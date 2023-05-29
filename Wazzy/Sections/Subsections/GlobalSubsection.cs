@@ -1,38 +1,36 @@
-﻿
-using Wazzy.IO;
+﻿using Wazzy.IO;
 using Wazzy.Types;
 using Wazzy.Bytecode;
 
-namespace Wazzy.Sections.Subsections
+namespace Wazzy.Sections.Subsections;
+
+public class GlobalSubsection : WASMObject
 {
-    public class GlobalSubsection : WASMObject
+    public GlobalType Info { get; set; }
+    public List<WASMInstruction> Expression { get; set; }
+
+    public GlobalSubsection(ref WASMReader input)
     {
-        public GlobalType Info { get; set; }
-        public List<WASMInstruction> Expression { get; set; }
+        Info = new GlobalType(ref input);
+        Expression = input.ReadExpression();
+    }
 
-        public GlobalSubsection(ref WASMReader input)
+    public override int GetSize()
+    {
+        int size = 0;
+        size += Info.GetSize();
+        foreach (WASMInstruction instruction in Expression)
         {
-            Info = new GlobalType(ref input);
-            Expression = input.ReadExpression();
+            size += instruction.GetSize();
         }
-
-        public override int GetSize()
+        return size;
+    }
+    public override void WriteTo(ref WASMWriter output)
+    {
+        Info.WriteTo(ref output);
+        foreach (WASMInstruction instruction in Expression)
         {
-            int size = 0;
-            size += Info.GetSize();
-            foreach (WASMInstruction instruction in Expression)
-            {
-                size += instruction.GetSize();
-            }
-            return size;
-        }
-        public override void WriteTo(ref WASMWriter output)
-        {
-            Info.WriteTo(ref output);
-            foreach (WASMInstruction instruction in Expression)
-            {
-                instruction.WriteTo(ref output);
-            }
+            instruction.WriteTo(ref output);
         }
     }
 }

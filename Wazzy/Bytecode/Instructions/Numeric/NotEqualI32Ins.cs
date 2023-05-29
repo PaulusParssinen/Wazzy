@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class NotEqualI32Ins : WASMInstruction
 {
-    public class NotEqualI32Ins : WASMInstruction
-    {
-        public NotEqualI32Ins()
-            : base(OPCode.NotEqualI32)
-        { }
-    }
+    public NotEqualI32Ins()
+        : base(OPCode.NotEqualI32)
+    { }
 }

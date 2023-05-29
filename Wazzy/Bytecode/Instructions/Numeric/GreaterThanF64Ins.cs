@@ -1,10 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class GreaterThanF64Ins : WASMInstruction
 {
-    public class GreaterThanF64Ins
-        : WASMInstruction
-    {
-        public GreaterThanF64Ins()
-            : base(OPCode.GreaterThanF64)
-        { }
-    }
+    public GreaterThanF64Ins()
+        : base(OPCode.GreaterThanF64)
+    { }
 }

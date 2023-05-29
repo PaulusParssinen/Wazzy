@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class DivideF64Ins : WASMInstruction
 {
-    public class DivideF64Ins : WASMInstruction
-    {
-        public DivideF64Ins()
-            : base(OPCode.DivideF64)
-        { }
-    }
+    public DivideF64Ins()
+        : base(OPCode.DivideF64)
+    { }
 }

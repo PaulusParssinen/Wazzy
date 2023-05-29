@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class GreaterThanI32_UIns : WASMInstruction
 {
-    public class GreaterThanI32_UIns : WASMInstruction
-    {
-        public GreaterThanI32_UIns()
-            : base(OPCode.GreaterThanI32_U)
-        { }
-    }
+    public GreaterThanI32_UIns()
+        : base(OPCode.GreaterThanI32_U)
+    { }
 }

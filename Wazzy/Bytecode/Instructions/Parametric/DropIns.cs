@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Parametric
+﻿namespace Wazzy.Bytecode.Instructions.Parametric;
+
+public class DropIns : WASMInstruction
 {
-    public class DropIns : WASMInstruction
-    {
-        public DropIns()
-            : base(OPCode.Drop)
-        { }
-    }
+    public DropIns()
+        : base(OPCode.Drop)
+    { }
 }

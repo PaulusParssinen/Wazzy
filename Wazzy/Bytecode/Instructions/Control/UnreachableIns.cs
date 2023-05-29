@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Control
+﻿namespace Wazzy.Bytecode.Instructions.Control;
+
+public class UnreachableIns : WASMInstruction
 {
-    public class UnreachableIns : WASMInstruction
-    {
-        public UnreachableIns()
-            : base(OPCode.Unreachable)
-        { }
-    }
+    public UnreachableIns()
+        : base(OPCode.Unreachable)
+    { }
 }

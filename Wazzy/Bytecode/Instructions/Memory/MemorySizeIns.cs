@@ -1,23 +1,22 @@
 ﻿using Wazzy.IO;
 
-namespace Wazzy.Bytecode.Instructions.Memory
+namespace Wazzy.Bytecode.Instructions.Memory;
+
+public class MemorySizeIns : MemoryInstruction
 {
-    public class MemorySizeIns : MemoryInstruction
+    public byte Index { get; set; }
+
+    public MemorySizeIns(byte index = 0)
+        : base(OPCode.MemorySize, false)
     {
-        public byte Index { get; set; }
+        Index = index;
+    }
+    public MemorySizeIns(ref WASMReader input)
+        : this(input.ReadByte())
+    { }
 
-        public MemorySizeIns(byte index = 0)
-            : base(OPCode.MemorySize, false)
-        {
-            Index = index;
-        }
-        public MemorySizeIns(ref WASMReader input)
-            : this(input.ReadByte())
-        { }
-
-        protected override void WriteBodyTo(ref WASMWriter output)
-        {
-            output.Write(Index);
-        }
+    protected override void WriteBodyTo(ref WASMWriter output)
+    {
+        output.Write(Index);
     }
 }

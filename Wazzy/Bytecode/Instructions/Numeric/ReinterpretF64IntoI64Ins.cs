@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class ReinterpretF64IntoI64Ins : WASMInstruction
 {
-    public class ReinterpretF64IntoI64Ins : WASMInstruction
-    {
-        public ReinterpretF64IntoI64Ins()
-            : base(OPCode.ReinterpretF64IntoI64)
-        { }
-    }
+    public ReinterpretF64IntoI64Ins()
+        : base(OPCode.ReinterpretF64IntoI64)
+    { }
 }

@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class NegateF64Ins : WASMInstruction
 {
-    public class NegateF64Ins : WASMInstruction
-    {
-        public NegateF64Ins()
-            : base(OPCode.NegateF64)
-        { }
-    }
+    public NegateF64Ins()
+        : base(OPCode.NegateF64)
+    { }
 }

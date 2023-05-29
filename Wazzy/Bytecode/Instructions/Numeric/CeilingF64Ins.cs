@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class CeilingF64Ins : WASMInstruction
 {
-    public class CeilingF64Ins : WASMInstruction
-    {
-        public CeilingF64Ins()
-            : base(OPCode.CeilingF64)
-        { }
-    }
+    public CeilingF64Ins()
+        : base(OPCode.CeilingF64)
+    { }
 }

@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class LessThanOrZeroI32_SIns : WASMInstruction
 {
-    public class LessThanOrZeroI32_SIns : WASMInstruction
-    {
-        public LessThanOrZeroI32_SIns()
-            : base(OPCode.LessThanOrZeroI32_S)
-        { }
-    }
+    public LessThanOrZeroI32_SIns()
+        : base(OPCode.LessThanOrZeroI32_S)
+    { }
 }

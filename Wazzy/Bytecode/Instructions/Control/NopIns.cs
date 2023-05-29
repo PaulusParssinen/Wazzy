@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Control
+﻿namespace Wazzy.Bytecode.Instructions.Control;
+
+public class NopIns : WASMInstruction
 {
-    public class NopIns : WASMInstruction
-    {
-        public NopIns()
-            : base(OPCode.Nop)
-        { }
-    }
+    public NopIns()
+        : base(OPCode.Nop)
+    { }
 }

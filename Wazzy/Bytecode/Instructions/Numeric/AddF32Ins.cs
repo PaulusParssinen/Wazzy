@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class AddF32Ins : WASMInstruction
 {
-    public class AddF32Ins : WASMInstruction
-    {
-        public AddF32Ins()
-            : base(OPCode.AddF32)
-        { }
-    }
+    public AddF32Ins()
+        : base(OPCode.AddF32)
+    { }
 }

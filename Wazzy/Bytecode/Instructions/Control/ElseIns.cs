@@ -1,38 +1,36 @@
-﻿
-using Wazzy.IO;
+﻿using Wazzy.IO;
 
-namespace Wazzy.Bytecode.Instructions.Control
+namespace Wazzy.Bytecode.Instructions.Control;
+
+public class ElseIns : WASMInstruction, IStructuredInstruction
 {
-    public class ElseIns : WASMInstruction, IStructuredInstruction
+    public List<WASMInstruction> Expression { get; set; }
+
+    public ElseIns()
+        : base(OPCode.Else)
     {
-        public List<WASMInstruction> Expression { get; set; }
+        Expression = new List<WASMInstruction>();
+    }
+    public ElseIns(ref WASMReader input)
+        : base(OPCode.Else)
+    {
+        Expression = input.ReadExpression();
+    }
 
-        public ElseIns()
-            : base(OPCode.Else)
+    protected override int GetBodySize()
+    {
+        int size = 0;
+        foreach (WASMInstruction instruction in Expression)
         {
-            Expression = new List<WASMInstruction>();
+            size += instruction.GetSize();
         }
-        public ElseIns(ref WASMReader input)
-            : base(OPCode.Else)
+        return size;
+    }
+    protected override void WriteBodyTo(ref WASMWriter output)
+    {
+        foreach (WASMInstruction instruction in Expression)
         {
-            Expression = input.ReadExpression();
-        }
-
-        protected override int GetBodySize()
-        {
-            int size = 0;
-            foreach (WASMInstruction instruction in Expression)
-            {
-                size += instruction.GetSize();
-            }
-            return size;
-        }
-        protected override void WriteBodyTo(ref WASMWriter output)
-        {
-            foreach (WASMInstruction instruction in Expression)
-            {
-                instruction.WriteTo(ref output);
-            }
+            instruction.WriteTo(ref output);
         }
     }
 }

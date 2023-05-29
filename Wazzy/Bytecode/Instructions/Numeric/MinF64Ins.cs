@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class MinF64Ins : WASMInstruction
 {
-    public class MinF64Ins : WASMInstruction
-    {
-        public MinF64Ins()
-            : base(OPCode.MinF64)
-        { }
-    }
+    public MinF64Ins()
+        : base(OPCode.MinF64)
+    { }
 }

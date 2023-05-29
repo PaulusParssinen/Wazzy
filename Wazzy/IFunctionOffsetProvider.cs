@@ -1,7 +1,6 @@
-﻿namespace Wazzy
+﻿namespace Wazzy;
+
+public interface IFunctionOffsetProvider
 {
-    public interface IFunctionOffsetProvider
-    {
-        int FunctionOffset { get; }
-    }
+    int FunctionOffset { get; }
 }

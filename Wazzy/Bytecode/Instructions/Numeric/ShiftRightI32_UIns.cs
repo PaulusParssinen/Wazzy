@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class ShiftRightI32_UIns : WASMInstruction
 {
-    public class ShiftRightI32_UIns : WASMInstruction
-    {
-        public ShiftRightI32_UIns()
-            : base(OPCode.ShiftRightI32_U)
-        { }
-    }
+    public ShiftRightI32_UIns()
+        : base(OPCode.ShiftRightI32_U)
+    { }
 }

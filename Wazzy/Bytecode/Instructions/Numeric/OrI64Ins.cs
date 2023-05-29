@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class OrI64Ins : WASMInstruction
 {
-    public class OrI64Ins : WASMInstruction
-    {
-        public OrI64Ins()
-            : base(OPCode.OrI64)
-        { }
-    }
+    public OrI64Ins()
+        : base(OPCode.OrI64)
+    { }
 }

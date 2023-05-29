@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class ExtendI32_8SIns : WASMInstruction
 {
-    public class ExtendI32_8SIns : WASMInstruction
-    {
-        public ExtendI32_8SIns()
-            : base(OPCode.ExtendI32_8S)
-        { }
-    }
+    public ExtendI32_8SIns()
+        : base(OPCode.ExtendI32_8S)
+    { }
 }

@@ -1,37 +1,36 @@
 ﻿using Wazzy.IO;
 using Wazzy.Sections.Subsections;
 
-namespace Wazzy.Sections
-{
-    public class CodeSection : WASMSectionEnumerable<CodeSubsection>
-    {
-        public CodeSection(ref WASMReader input, IFunctionOffsetProvider functionOffsetProvider)
-            : base(WASMSectionId.CodeSection)
-        {
-            Capacity = (int)input.ReadIntULEB128();
-            for (int i = 0; i < Capacity; i++)
-            {
-                Add(new CodeSubsection(ref input, functionOffsetProvider));
-            }
-        }
+namespace Wazzy.Sections;
 
-        protected override int GetBodySize()
+public class CodeSection : WASMSectionEnumerable<CodeSubsection>
+{
+    public CodeSection(ref WASMReader input, IFunctionOffsetProvider functionOffsetProvider)
+        : base(WASMSectionId.CodeSection)
+    {
+        Capacity = (int)input.ReadIntULEB128();
+        for (int i = 0; i < Capacity; i++)
         {
-            int size = 0;
-            size += WASMReader.GetULEB128Size((uint)Count);
-            foreach (CodeSubsection code in this)
-            {
-                size += code.GetSize();
-            }
-            return size;
+            Add(new CodeSubsection(ref input, functionOffsetProvider));
         }
-        protected override void WriteBodyTo(ref WASMWriter output)
+    }
+
+    protected override int GetBodySize()
+    {
+        int size = 0;
+        size += WASMReader.GetULEB128Size((uint)Count);
+        foreach (CodeSubsection code in this)
         {
-            output.WriteULEB128((uint)Count);
-            foreach (CodeSubsection code in this)
-            {
-                code.WriteTo(ref output);
-            }
+            size += code.GetSize();
+        }
+        return size;
+    }
+    protected override void WriteBodyTo(ref WASMWriter output)
+    {
+        output.WriteULEB128((uint)Count);
+        foreach (CodeSubsection code in this)
+        {
+            code.WriteTo(ref output);
         }
     }
 }

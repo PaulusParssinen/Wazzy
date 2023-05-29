@@ -1,17 +1,16 @@
 ﻿using Wazzy.IO;
 
-namespace Wazzy.Bytecode.Instructions.Memory
+namespace Wazzy.Bytecode.Instructions.Memory;
+
+public class StoreI32_8Ins : MemoryInstruction
 {
-    public class StoreI32_8Ins : MemoryInstruction
-    {
-        public StoreI32_8Ins()
-            : base(OPCode.StoreI32_8, true)
-        { }
-        public StoreI32_8Ins(ref WASMReader input)
-            : base(OPCode.StoreI32_8, ref input, true)
-        { }
-        public StoreI32_8Ins(uint align, uint offset)
-            : base(OPCode.StoreI32_8, align, offset)
-        { }
-    }
+    public StoreI32_8Ins()
+        : base(OPCode.StoreI32_8, true)
+    { }
+    public StoreI32_8Ins(ref WASMReader input)
+        : base(OPCode.StoreI32_8, ref input, true)
+    { }
+    public StoreI32_8Ins(uint align, uint offset)
+        : base(OPCode.StoreI32_8, align, offset)
+    { }
 }

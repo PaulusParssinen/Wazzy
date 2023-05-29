@@ -1,9 +1,8 @@
-﻿namespace Wazzy.Bytecode.Instructions.Numeric
+﻿namespace Wazzy.Bytecode.Instructions.Numeric;
+
+public class EqualF64Ins : WASMInstruction
 {
-    public class EqualF64Ins : WASMInstruction
-    {
-        public EqualF64Ins()
-            : base(OPCode.EqualF64)
-        { }
-    }
+    public EqualF64Ins()
+        : base(OPCode.EqualF64)
+    { }
 }
